@@ -1,377 +1,967 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-theme="dark">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎲</text></svg>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Le Grand Tirage au Sort en Direct ! - La Place du Village</title>
+    <title>Le Grand Tirage au Sort - La Place du Village (03)</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <style>
         :root {
-            --bg-color: #0b132b;
-            --card-bg: #1c2541;
-            --accent-color: #3a86ff;
-            --accent-hover: #2667cc;
-            --text-color: #f8f9fa;
-            --text-muted: #8d99ae;
-            --success-color: #2ec4b6;
+            --bg-body: #0f172a;
+            --bg-container: #1e293b;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
             --border-color: #334155;
+            --card-bg: #0f172a;
+            --item-bg: #1e293b;
+            --accent-color: #38bdf8;
+            --accent-hover: #0ea5e9;
+        }
+
+        /* Mode clair personnalisé : fond #318CE7 et corps central #79F8F8 */
+        [data-theme="light"] {
+            --bg-body: #318CE7;
+            --bg-container: #79F8F8;
+            --text-main: #0f172a;
+            --text-sub: #1e293b;
+            --border-color: #38bdf8;
+            --card-bg: #abffff;
+            --item-bg: #ffffff;
+            --accent-color: #0369a1;
+            --accent-hover: #0284c7;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            background-color: var(--bg-body);
+            color: var(--text-main);
             margin: 0;
             padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 100vh;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .top-bar {
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 10px;
+        }
+        .theme-btn-top {
+            background: var(--bg-container);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: all 0.2s;
+        }
+        .theme-btn-top:hover {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
         }
 
         .container {
             width: 100%;
-            max-width: 800px;
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
+            max-width: 900px;
+            background: var(--bg-container);
             padding: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
             box-sizing: border-box;
+            margin-bottom: 20px;
             position: relative;
         }
-
         h1 {
             text-align: center;
-            color: #4cc9f0;
-            font-size: 1.8rem;
-            margin-bottom: 5px;
+            color: var(--accent-color);
+            margin-top: 0;
+            margin-bottom: 10px;
         }
-
         .subtitle {
             text-align: center;
-            color: var(--text-muted);
             margin-bottom: 25px;
-            font-size: 1.1rem;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .subtitle a {
+            color: var(--accent-color);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .subtitle a:hover {
+            text-decoration: underline;
         }
 
-        .lot-card {
-            background: rgba(11, 19, 43, 0.6);
+        .prize-card {
+            background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 20px;
+            margin-bottom: 25px;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            margin-bottom: 25px;
+            gap: 15px;
+        }
+        @media(min-width: 600px) {
+            .prize-card { flex-direction: row; align-items: center; }
+        }
+        .prize-img-container {
+            flex: 0 0 200px;
             text-align: center;
         }
-
-        .lot-card img {
+        .prize-img {
             width: 100%;
-            max-width: 250px;
+            max-width: 180px;
+            height: 140px;
+            object-fit: cover;
             border-radius: 8px;
-            margin-bottom: 15px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            border: 1px solid var(--border-color);
+            background: var(--item-bg);
         }
-
-        .lot-card h3 {
-            color: #f72585;
-            margin: 0 0 10px 0;
+        .prize-info {
+            flex: 1;
         }
-
-        .lot-card p {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            margin: 0 0 15px 0;
+        .prize-title {
+            color: #92400e;
+            margin-top: 0;
+            font-size: 20px;
+            margin-bottom: 8px;
         }
-
-        .btn-pro {
-            background-color: var(--accent-color);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
+        [data-theme="dark"] .prize-title {
+            color: #fbbf24;
+        }
+        .prize-desc {
+            color: var(--text-sub);
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+        .btn-shop {
+            display: inline-block;
+            background: var(--accent-color);
+            color: #ffffff;
+            padding: 8px 14px;
+            border-radius: 6px;
             text-decoration: none;
-            font-weight: 600;
-            font-size: 0.9rem;
+            font-weight: bold;
+            font-size: 13px;
             transition: background 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
         }
-
-        .btn-pro:hover {
-            background-color: var(--accent-hover);
-        }
+        .btn-shop:hover { background: var(--accent-hover); }
 
         .countdown-container {
             display: flex;
             justify-content: center;
             gap: 15px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
-
-        .countdown-box {
-            background: var(--bg-color);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 10px 15px;
+        .time-box {
+            background: var(--card-bg);
+            color: var(--text-main);
+            padding: 15px;
+            border-radius: 10px;
+            min-width: 70px;
             text-align: center;
-            min-width: 60px;
+            border: 1px solid var(--border-color);
         }
-
-        .countdown-value {
-            font-size: 1.5rem;
+        .time-value {
+            font-size: 28px;
             font-weight: bold;
-            color: #4cc9f0;
+            display: block;
+            color: var(--accent-color);
         }
-
-        .countdown-label {
-            font-size: 0.75rem;
-            color: var(--text-muted);
+        .time-label {
+            font-size: 11px;
+            color: var(--text-sub);
             text-transform: uppercase;
         }
 
-        .date-info {
-            text-align: center;
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            margin-bottom: 30px;
-        }
-
-        .participants-section {
-            background: rgba(11, 19, 43, 0.4);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
+        #loto-display {
+            display: none;
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border: 2px solid var(--accent-color);
             padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
         }
-
-        .participants-header {
-            font-weight: bold;
-            color: var(--success-color);
-            margin-bottom: 15px;
+        .loto-machine {
+            position: relative;
+            width: 100%;
+            height: 320px;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.12) 0%, rgba(15, 23, 42, 0.95) 80%);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            margin-top: 15px;
+        }
+        .loto-ball {
+            position: absolute;
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 35%, #fff 5%, var(--ball-color, #fbbf24) 60%, #b45309 100%);
+            color: #1e293b;
             display: flex;
             align-items: center;
-            gap: 8px;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            text-align: center;
+            padding: 4px;
+            box-shadow: inset -3px -3px 8px rgba(0,0,0,0.4), 0 4px 8px rgba(0,0,0,0.3);
+            word-break: break-word;
+            user-select: none;
+            will-change: left, top, width, height, transform;
         }
 
-        .participants-list {
-            max-height: 250px;
-            overflow-y: auto;
+        #winner-box {
+            display: none;
+            background: #064e3b;
+            color: #ecfdf5;
+            padding: 25px;
+            border-radius: 12px;
+            border: 2px solid #34d399;
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 0 25px rgba(52, 211, 153, 0.2);
+        }
+        #winner-name {
+            font-size: 32px;
+            font-weight: bold;
+            color: #34d399;
+            margin: 10px 0 15px 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .post-timer {
+            background: rgba(0, 0, 0, 0.25);
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 14px;
+            border: 1px solid rgba(52, 211, 153, 0.3);
+        }
+        .post-timer span {
+            font-weight: bold;
+            color: #fbbf24;
+        }
+        .post-timer-msg {
+            margin-top: 8px;
+            font-style: italic;
+            color: #a7f3d0;
+            font-size: 13px;
+        }
+        .post-timer-msg a {
+            color: #38bdf8;
+            text-decoration: underline;
+            font-weight: bold;
+        }
+
+        .lists-section {
+            margin-top: 30px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            padding-right: 5px;
+            gap: 20px;
         }
-
-        .participant-item {
-            background: var(--bg-color);
-            border: 1px solid var(--border-color);
-            padding: 10px 15px;
-            border-radius: 6px;
-            font-size: 0.95rem;
-        }
-
-        .admin-trigger {
-            position: absolute;
-            bottom: 15px;
-            right: 15px;
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            font-size: 1.2rem;
-            opacity: 0.6;
-            transition: opacity 0.2s;
-        }
-
-        .admin-trigger:hover {
-            opacity: 1;
-        }
-
-        /* Modal Admin */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .modal-content {
+        .list-card-valid, .list-card-refused {
             background: var(--card-bg);
+            padding: 15px;
+            border-radius: 10px;
             border: 1px solid var(--border-color);
-            padding: 30px;
-            border-radius: 12px;
-            width: 90%;
-            max-width: 400px;
-            box-sizing: border-box;
+            max-height: 350px;
+            overflow-y: auto;
         }
-
-        .modal-content h3 {
+        .list-card-valid h3, .list-card-refused h3 {
             margin-top: 0;
-            color: #4cc9f0;
+            font-size: 16px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+            position: sticky;
+            top: 0;
+            background: var(--card-bg);
+            z-index: 5;
         }
-
-        .modal-content input, .modal-content textarea {
-            width: 100%;
-            background: var(--bg-color);
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
-            padding: 10px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            box-sizing: border-box;
+        
+        ul#list-valid {
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-auto-flow: column;
+            grid-template-rows: repeat(auto-fill, minmax(32px, auto));
+            gap: 6px 12px;
+            padding-left: 0;
+            list-style: none;
+            margin: 5px 0;
+            max-height: 300px;
         }
+        @media(min-width: 600px) { ul#list-valid { grid-template-columns: repeat(2, 1fr); } }
+        @media(min-width: 800px) { ul#list-valid { grid-template-columns: repeat(3, 1fr); } }
 
-        .modal-buttons {
+        ul#list-refused { padding-left: 0; list-style: none; margin: 5px 0; }
+
+        li {
             display: flex;
-            justify-content: flex-end;
-            gap: 10px;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--item-bg);
+            padding: 6px 10px;
+            margin-bottom: 4px;
+            border-radius: 6px;
+            font-size: 13px;
+            border: 1px solid var(--border-color);
         }
-
-        .btn {
-            background: var(--accent-color);
+        .btn-delete-item {
+            display: none;
+            background: #ef4444;
             color: white;
             border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
+            padding: 2px 6px;
+            border-radius: 4px;
             cursor: pointer;
-            font-weight: 600;
+            font-size: 10px;
+            font-weight: bold;
         }
 
-        .btn-secondary {
-            background: var(--text-muted);
+        #admin-panel {
+            display: none;
+            background: var(--card-bg);
+            border: 2px dashed var(--accent-color);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 25px;
+        }
+        #admin-panel h3 { color: var(--accent-color); margin-top: 0; }
+        .admin-controls { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px; }
+        input, textarea, select, button {
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            font-size: 14px;
+            font-family: inherit;
+        }
+        input, textarea, select { background: var(--item-bg); color: var(--text-main); flex: 1; width: 100%; box-sizing: border-box; }
+        button { background: var(--accent-color); color: #ffffff; font-weight: bold; cursor: pointer; border: none; transition: background 0.2s; }
+        button:hover { background: var(--accent-hover); }
+        .btn-danger { background: #ef4444; color: white; }
+        .btn-warning { background: #f59e0b; color: #0f172a; }
+
+        .footer {
+            text-align: center;
+            padding: 15px;
+            font-size: 13px;
+            color: var(--text-sub);
+            background-color: var(--bg-container);
+            border-radius: 10px;
+            width: 100%;
+            max-width: 900px;
+            box-sizing: border-box;
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .footer-content { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
+        .footer a { color: var(--accent-color); text-decoration: none; font-weight: bold; }
+        .footer-btn {
+            background: rgba(128, 128, 128, 0.1);
+            color: var(--text-sub);
+            border: 1px solid var(--border-color);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 14px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>🎉 Le Grand Tirage au Sort en Direct !</h1>
-        <div class="subtitle">La Place du Village - ALLIER (03) 🌲</div>
-
-        <div class="lot-card">
-            <img src="https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=500&q=80" alt="Lot à gagner">
-            <h3>🎁 Sachet de Caramels Artisanaux "Les Lapalissades"</h3>
-            <p>Tentez de remporter un magnifique lot artisanal offert par notre producteur local partenaire Frédéric Pourchet.</p>
-            <a href="#" target="_blank" class="btn-pro">Visiter la boutique / producteur 🌐</a>
-        </div>
-
-        <div class="countdown-container">
-            <div class="countdown-box">
-                <div class="countdown-value" id="days">08</div>
-                <div class="countdown-label">Jours</div>
-            </div>
-            <div class="countdown-box">
-                <div class="countdown-value" id="hours">00</div>
-                <div class="countdown-label">Heures</div>
-            </div>
-            <div class="countdown-box">
-                <div class="countdown-value" id="minutes">11</div>
-                <div class="countdown-label">Min</div>
-            </div>
-            <div class="countdown-box">
-                <div class="countdown-value" id="seconds">59</div>
-                <div class="countdown-label">Sec</div>
-            </div>
-        </div>
-
-        <div class="date-info">Ouverture du tirage le : dimanche 4 octobre 2026 à 20:00</div>
-
-        <div class="participants-section">
-            <div class="participants-header">
-                ✅ Participants Validés (<span id="count">0</span>)
-            </div>
-            <div class="participants-list" id="participantsList">
-                <!-- Les participants s'afficheront ici -->
-            </div>
-        </div>
-
-        <button class="admin-trigger" onclick="openAdmin()" title="Administration">🔒</button>
+    <div class="top-bar">
+        <button class="theme-btn-top" id="theme-toggle-btn" onclick="toggleTheme()" title="Changer de thème">
+            <span id="theme-icon">☀️</span> <span id="theme-text">Mode Clair</span>
+        </button>
     </div>
 
-    <!-- Modal Admin -->
-    <div class="modal" id="adminModal">
-        <div class="modal-content">
-            <h3>Administration</h3>
-            <div id="loginSection">
-                <p>Mot de passe requis :</p>
-                <input type="password" id="adminPassword" placeholder="Mot de passe">
-                <div class="modal-buttons">
-                    <button class="btn btn-secondary" onclick="closeAdmin()">Annuler</button>
-                    <button class="btn" onclick="checkPassword()">Valider</button>
+    <div class="container">
+        <h1>🎉 Le Grand Tirage au Sort en Direct !</h1>
+        <div class="subtitle">
+            <a href="https://www.facebook.com/groups/bouce/" target="_blank">La Place du Village - ALLIER (03) 🌲</a>
+        </div>
+
+        <div class="prize-card">
+            <div class="prize-img-container">
+                <img id="prize-img-display" src="" alt="Lot" class="prize-img">
+            </div>
+            <div class="prize-info">
+                <h3 id="prize-title-display" class="prize-title"></h3>
+                <p id="prize-desc-display" class="prize-desc"></p>
+                <a id="prize-link-display" href="#" target="_blank" class="btn-shop">Visiter la boutique / producteur 🌐</a>
+            </div>
+        </div>
+
+        <div id="countdown-container" class="countdown-container">
+            <div class="time-box"><span id="days" class="time-value">0</span><span class="time-label">Jours</span></div>
+            <div class="time-box"><span id="hours" class="time-value">0</span><span class="time-label">Heures</span></div>
+            <div class="time-box"><span id="minutes" class="time-value">0</span><span class="time-label">Min</span></div>
+            <div class="time-box"><span id="seconds" class="time-value">0</span><span class="time-label">Sec</span></div>
+        </div>
+        <div id="countdown-text" style="text-align: center; color: var(--text-sub); font-size: 14px; margin-bottom: 20px;">
+            Ouverture du tirage le : <span id="target-date-str"></span>
+        </div>
+
+        <!-- Machine à boules -->
+        <div id="loto-display">
+            <h2 id="loto-title-status" style="margin: 0 0 5px 0; font-size: 20px; color: var(--accent-color);">🎰 Le tirage est en cours en direct !</h2>
+            <div class="loto-machine" id="loto-machine"></div>
+        </div>
+
+        <!-- Résultat gagnant -->
+        <div id="winner-box">
+            <h2 style="margin: 0; font-size: 22px;">🏆 TADAM ! Le grand gagnant est :</h2>
+            <p id="winner-name"></p>
+            <div class="post-timer">
+                Le tirage est maintenant terminé depuis : <span id="post-timer-clock">0j 0h 0m 0s</span>
+                <div class="post-timer-msg">
+                    ✨ À bientôt pour un nouveau tirage ! <a href="https://www.facebook.com/groups/bouce" target="_blank">Consultez régulièrement le groupe</a> pour ne rien rater. 🌲
                 </div>
             </div>
-            <div id="configSection" style="display:none;">
-                <p>Liste des participants (un par ligne) :</p>
-                <textarea id="participantsInput" rows="6"></textarea>
-                <div class="modal-buttons">
-                    <button class="btn btn-secondary" onclick="closeAdmin()">Fermer</button>
-                    <button class="btn" onclick="saveParticipants()">Enregistrer</button>
-                </div>
+        </div>
+
+        <div class="lists-section">
+            <div class="list-card-valid">
+                <h3 id="count-valid">✅ Participants Validés (0)</h3>
+                <ul id="list-valid"></ul>
             </div>
+            <div class="list-card-refused">
+                <h3 id="count-refused">❌ Inscriptions Refusées (0)</h3>
+                <ul id="list-refused"></ul>
+            </div>
+        </div>
+
+        <div id="admin-panel">
+            <h3>🛠️ Panneau Administrateur</h3>
+            
+            <h4 style="color: var(--accent-color); margin: 0 0 8px 0;">⏳ Compte à Rebours</h4>
+            <div style="display: flex; gap: 8px; margin-bottom: 15px;">
+                <input type="datetime-local" id="cfg-countdown-date">
+                <button onclick="saveCountdownConfig()" class="btn-warning">💾 Changer la date</button>
+            </div>
+
+            <hr style="border-color: var(--border-color); margin: 15px 0;">
+
+            <h4 style="color: var(--accent-color); margin: 0 0 8px 0;">📦 Lot</h4>
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px;">
+                <input type="text" id="cfg-prize-title" placeholder="Titre...">
+                <textarea id="cfg-prize-desc" rows="2" placeholder="Description..."></textarea>
+                <input type="text" id="cfg-prize-img" placeholder="URL Image...">
+                <input type="text" id="cfg-prize-url" placeholder="URL Boutique...">
+                <button onclick="savePrizeConfig()" class="btn-warning">💾 Mettre à jour le lot</button>
+            </div>
+
+            <hr style="border-color: var(--border-color); margin: 15px 0;">
+
+            <h4 style="color: var(--accent-color); margin: 0 0 8px 0;">🎵 Son de Victoire</h4>
+            <div style="margin-bottom: 15px;">
+                <select id="victorySoundSelect">
+                    <option value="fanfare">🎺 La petite fanfare festive</option>
+                    <option value="gong">🛎️ Le Gong de jeu télévisé</option>
+                </select>
+            </div>
+
+            <hr style="border-color: var(--border-color); margin: 15px 0;">
+
+            <h4 style="color: var(--accent-color); margin: 0 0 8px 0;">👥 Gestion des Participants</h4>
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px;">
+                <textarea id="bulk-participants" rows="2" placeholder="Coller une liste brute..."></textarea>
+                <button onclick="addBulkParticipants()">✨ Nettoyer et Ajouter</button>
+            </div>
+            <div class="admin-controls" style="margin-bottom: 10px;">
+                <input type="text" id="new-participant" placeholder="Nom...">
+                <button onclick="addParticipant()">➕ Ajouter Validé</button>
+            </div>
+            <div class="admin-controls">
+                <input type="text" id="new-refused" placeholder="Nom refusé...">
+                <input type="text" id="reason-refused" placeholder="Raison...">
+                <button onclick="addRefused()" class="btn-warning">🚫 Ajouter Refusé</button>
+            </div>
+            
+            <div class="admin-controls" style="margin-top: 20px;">
+                <button onclick="lancerTestTirage()" class="btn-warning" style="flex: 1;">🎲 Lancer un tirage test immédiat</button>
+                <button onclick="resetTirage()" class="btn-warning">🔄 Réinitialiser le tirage</button>
+                <button onclick="resetData()" class="btn-danger">🗑️ Tout effacer</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="footer-content">
+            Codé en Python & Web par <a href="https://www.facebook.com/profile.php?id=100073514276062" target="_blank">Seb Capturis</a> 
+            pour <a href="https://www.facebook.com/groups/bouce/" target="_blank">La Place du Village - ALLIER (03)</a> 🌲🏡
+            <button class="footer-btn" onclick="demanderMotDePasse()" title="Admin">🔒</button>
         </div>
     </div>
 
     <script>
-        // Gestion des participants par défaut
-        let participants = JSON.parse(localStorage.getItem('participants')) || [
-            "Alexandre Moreau",
-            "Christophe Leroy",
-            "Julie Dupont",
-            "Marc Leroy",
-            "Nathalie Faure",
-            "Sophie Petit",
-            "Thomas Bernard"
+        const ADMIN_PASSWORD = "admin170767";
+        let isAdminLoggedIn = false;
+
+        let targetDateStr = localStorage.getItem('seb_target_date') || "2026-10-04T20:00:00";
+        let prizeConfig = JSON.parse(localStorage.getItem('seb_prize')) || {
+            title: "🎁 Sachet de Caramels Artisanaux \"Les Lapalissades\"",
+            desc: "Tentez de remporter un magnifique lot artisanal offert par notre producteur local partenaire Frédéric Pourchet.",
+            img: "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=300",
+            url: "https://www.facebook.com/groups/bouce/"
+        };
+        let participantsValid = JSON.parse(localStorage.getItem('seb_participants')) || [
+            "Élodie Martin", "Thomas Bernard", "Julie Dupont", "Marc Leroy", "Sophie Petit", "Alexandre Moreau", "Nathalie Faure", "Christophe Leroy"
+        ];
+        let participantsRefused = JSON.parse(localStorage.getItem('seb_refused')) || [
+            { nom: "Jean Durand", raison: "Hors critères géographiques" }
         ];
 
-        function renderParticipants() {
-            const listEl = document.getElementById('participantsList');
-            const countEl = document.getElementById('count');
-            listEl.innerHTML = '';
-            countEl.textContent = participants.length;
-            
-            participants.forEach(p => {
-                const item = document.createElement('div');
-                item.className = 'participant-item';
-                item.textContent = p;
-                listEl.appendChild(item);
-            });
+        let officialWinner = localStorage.getItem('seb_winner') || null;
+        let winnerTimestamp = localStorage.getItem('seb_winner_time') ? parseInt(localStorage.getItem('seb_winner_time')) : null;
+        if (officialWinner && !winnerTimestamp) {
+            winnerTimestamp = new Date().getTime();
+            localStorage.setItem('seb_winner_time', winnerTimestamp);
         }
 
-        function openAdmin() {
-            document.getElementById('adminModal').style.display = 'flex';
-            document.getElementById('loginSection').style.display = 'block';
-            document.getElementById('configSection').style.display = 'none';
-            document.getElementById('adminPassword').value = '';
+        function initTheme() {
+            const savedTheme = localStorage.getItem('seb_theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeButtonUI(savedTheme);
         }
-
-        function closeAdmin() {
-            document.getElementById('adminModal').style.display = 'none';
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('seb_theme', newTheme);
+            updateThemeButtonUI(newTheme);
         }
+        function updateThemeButtonUI(theme) {
+            const iconEl = document.getElementById('theme-icon');
+            const textEl = document.getElementById('theme-text');
+            if (iconEl && textEl) {
+                iconEl.innerText = theme === 'dark' ? '☀️' : '🌙';
+                textEl.innerText = theme === 'dark' ? 'Mode Clair' : 'Mode Sombre';
+            }
+        }
+        initTheme();
 
-        function checkPassword() {
-            const pwd = document.getElementById('adminPassword').value;
-            if (pwd === 'admin170767') {
-                document.getElementById('loginSection').style.display = 'none';
-                document.getElementById('configSection').style.display = 'block';
-                document.getElementById('participantsInput').value = participants.join('\n');
-            } else {
-                alert('Mot de passe incorrect !');
+        function demanderMotDePasse() {
+            const mdp = prompt("Mot de passe administrateur :");
+            if (mdp === ADMIN_PASSWORD) {
+                isAdminLoggedIn = true;
+                document.getElementById("admin-panel").style.display = "block";
+                chargerInterface();
+                alert("🔓 Mode administrateur activé !");
+            } else if (mdp !== null) {
+                alert("❌ Mot de passe incorrect !");
             }
         }
 
-        function saveParticipants() {
-            const text = document.getElementById('participantsInput').value;
-            participants = text.split('\n').map(p => p.trim()).filter(p => p.length > 0);
-            localStorage.setItem('participants', JSON.stringify(participants));
-            renderParticipants();
-            closeAdmin();
+        function playDrumRollSound() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                for (let i = 0; i < 35; i++) {
+                    let osc = audioCtx.createOscillator();
+                    let gain = audioCtx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(80 + Math.random() * 25, audioCtx.currentTime + i * 0.12);
+                    gain.gain.setValueAtTime(0.12, audioCtx.currentTime + i * 0.12);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + i * 0.12 + 0.08);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(audioCtx.currentTime + i * 0.12);
+                    osc.stop(audioCtx.currentTime + i * 0.12 + 0.08);
+                }
+            } catch(e) {}
         }
 
-        renderParticipants();
+        function playGongSound() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                let osc = audioCtx.createOscillator();
+                let gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(110, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(45, audioCtx.currentTime + 1.5);
+                gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.5);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 1.5);
+            } catch(e) {}
+        }
+
+        function playFanfareSound() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const notes = [
+                    {f: 392.00, t: 0.0, d: 0.15},
+                    {f: 523.25, t: 0.15, d: 0.15},
+                    {f: 659.25, t: 0.3, d: 0.15},
+                    {f: 783.99, t: 0.45, d: 0.5}
+                ];
+                notes.forEach(note => {
+                    let osc = audioCtx.createOscillator();
+                    let gain = audioCtx.createGain();
+                    osc.type = 'square';
+                    osc.frequency.value = note.f;
+                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime + note.t);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + note.t + note.d);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(audioCtx.currentTime + note.t);
+                    osc.stop(audioCtx.currentTime + note.t + note.d);
+                });
+            } catch(e) {}
+        }
+
+        function launchBalloons() {
+            const balloonContainer = document.createElement('div');
+            balloonContainer.style.position = 'fixed';
+            balloonContainer.style.bottom = '-100px';
+            balloonContainer.style.left = '0';
+            balloonContainer.style.width = '100%';
+            balloonContainer.style.height = '100%';
+            balloonContainer.style.pointerEvents = 'none';
+            balloonContainer.style.zIndex = '9999';
+            document.body.appendChild(balloonContainer);
+
+            const colors = ['#ff4757', '#2ed573', '#1e90ff', '#ffa502', '#9b59b6', '#ff6b81', '#48dbfb'];
+            for (let i = 0; i < 25; i++) {
+                const balloon = document.createElement('div');
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                const size = Math.floor(Math.random() * 30) + 50; 
+                const leftPos = Math.random() * 90; 
+                const duration = Math.random() * 2 + 3; 
+
+                balloon.innerHTML = `
+                    <svg viewBox="0 0 100 120" width="${size}" height="${size * 1.2}">
+                        <ellipse cx="50" cy="45" rx="40" ry="45" fill="${color}" />
+                        <path d="M 50 90 Q 45 100 50 105 Q 55 100 50 90" fill="${color}" />
+                        <line x1="50" y1="105" x2="50" y2="120" stroke="#888" stroke-width="2" />
+                    </svg>
+                `;
+                balloon.style.position = 'absolute';
+                balloon.style.left = `${leftPos}%`;
+                balloon.style.bottom = `-150px`;
+                balloon.style.transition = `transform ${duration}s ease-in, bottom ${duration}s ease-in, opacity ${duration}s ease-in`;
+                balloon.style.opacity = '0.9';
+
+                balloonContainer.appendChild(balloon);
+
+                setTimeout(() => {
+                    balloon.style.bottom = `${window.innerHeight + 200}px`;
+                    balloon.style.transform = `translateX(${(Math.random() - 0.5) * 150}px) rotate(${Math.random() * 20 - 10}deg)`;
+                    balloon.style.opacity = '0.2';
+                }, Math.random() * 800);
+            }
+            setTimeout(() => balloonContainer.remove(), 6000);
+        }
+
+        function fireConfettiFromWinner() {
+            const winnerBox = document.getElementById('winner-box');
+            if (!winnerBox) return;
+            const rect = winnerBox.getBoundingClientRect();
+            confetti({
+                particleCount: 70,
+                spread: 90,
+                origin: { x: (rect.left + rect.width / 2) / window.innerWidth, y: (rect.top + rect.height / 2) / window.innerHeight },
+                colors: ['#34d399', '#fbbf24', '#38bdf8', '#ffffff', '#f472b6']
+            });
+        }
+
+        function saveData() {
+            localStorage.setItem('seb_participants', JSON.stringify(participantsValid));
+            localStorage.setItem('seb_refused', JSON.stringify(participantsRefused));
+            localStorage.setItem('seb_prize', JSON.stringify(prizeConfig));
+            localStorage.setItem('seb_target_date', targetDateStr);
+            if (officialWinner) {
+                localStorage.setItem('seb_winner', officialWinner);
+                localStorage.setItem('seb_winner_time', winnerTimestamp);
+            } else {
+                localStorage.removeItem('seb_winner');
+                localStorage.removeItem('seb_winner_time');
+            }
+            chargerInterface();
+        }
+
+        function chargerInterface() {
+            document.getElementById("target-date-str").innerText = new Date(targetDateStr).toLocaleString('fr-FR', { dateStyle: 'full', timeStyle: 'short' });
+            document.getElementById("cfg-countdown-date").value = targetDateStr;
+
+            document.getElementById("prize-title-display").innerText = prizeConfig.title;
+            document.getElementById("prize-desc-display").innerText = prizeConfig.desc;
+            document.getElementById("prize-img-display").src = prizeConfig.img;
+            document.getElementById("prize-link-display").href = prizeConfig.url;
+
+            document.getElementById("cfg-prize-title").value = prizeConfig.title;
+            document.getElementById("cfg-prize-desc").value = prizeConfig.desc;
+            document.getElementById("cfg-prize-img").value = prizeConfig.img;
+            document.getElementById("cfg-prize-url").value = prizeConfig.url;
+
+            document.getElementById("count-valid").innerText = `✅ Participants Validés (${participantsValid.length})`;
+            const ulValid = document.getElementById("list-valid");
+            ulValid.innerHTML = "";
+            participantsValid.sort().forEach((p, index) => {
+                const li = document.createElement("li");
+                li.innerHTML = `<span>${p}</span> ${isAdminLoggedIn ? `<button class="btn-delete-item" style="display:inline-block;" onclick="removeValid(${index})">❌</button>` : ''}`;
+                ulValid.appendChild(li);
+            });
+
+            document.getElementById("count-refused").innerText = `❌ Inscriptions Refusées (${participantsRefused.length})`;
+            const ulRefused = document.getElementById("list-refused");
+            ulRefused.innerHTML = "";
+            participantsRefused.forEach((r, index) => {
+                const li = document.createElement("li");
+                li.innerHTML = `<span><strong>${r.nom}</strong> <em style="color:var(--text-sub)">(${r.raison})</em></span> ${isAdminLoggedIn ? `<button class="btn-delete-item" style="display:inline-block;" onclick="removeRefused(${index})">❌</button>` : ''}`;
+                ulRefused.appendChild(li);
+            });
+
+            if (officialWinner !== null) {
+                showWinnerUI(officialWinner);
+            } else {
+                document.getElementById("winner-box").style.display = "none";
+                document.getElementById("loto-display").style.display = "none";
+                document.getElementById("countdown-container").style.display = "flex";
+                document.getElementById("countdown-text").style.display = "block";
+            }
+        }
+
+        function saveCountdownConfig() {
+            const newDate = document.getElementById("cfg-countdown-date").value;
+            if (newDate) { targetDateStr = newDate; saveData(); alert("⏳ Date mise à jour !"); location.reload(); }
+        }
+
+        function savePrizeConfig() {
+            prizeConfig.title = document.getElementById("cfg-prize-title").value;
+            prizeConfig.desc = document.getElementById("cfg-prize-desc").value;
+            prizeConfig.img = document.getElementById("cfg-prize-img").value;
+            prizeConfig.url = document.getElementById("cfg-prize-url").value;
+            saveData();
+            alert("💾 Lot mis à jour !");
+        }
+
+        function addBulkParticipants() {
+            const text = document.getElementById("bulk-participants").value;
+            if (!text.trim()) return;
+            let addedCount = 0;
+            text.split('\n').forEach(line => {
+                let cleaned = line.replace(/^[\d\-\*\•\.\)]+\s*/, '').trim();
+                if (cleaned.length > 2 && !participantsValid.includes(cleaned)) {
+                    participantsValid.push(cleaned);
+                    addedCount++;
+                }
+            });
+            document.getElementById("bulk-participants").value = "";
+            saveData();
+            alert(`✨ ${addedCount} participant(s) ajouté(s) !`);
+        }
+
+        function addParticipant() {
+            const input = document.getElementById("new-participant");
+            if (input.value.trim() !== "") { participantsValid.push(input.value.trim()); input.value = ""; saveData(); }
+        }
+
+        function removeValid(index) { if (isAdminLoggedIn) { participantsValid.splice(index, 1); saveData(); } }
+
+        function addRefused() {
+            const n = document.getElementById("new-refused").value.trim();
+            const r = document.getElementById("reason-refused").value.trim() || "Non spécifié";
+            if (n !== "") { participantsRefused.push({ nom: n, raison: r }); document.getElementById("new-refused").value = ""; document.getElementById("reason-refused").value = ""; saveData(); }
+        }
+
+        function removeRefused(index) { if (isAdminLoggedIn) { participantsRefused.splice(index, 1); saveData(); } }
+
+        function showWinnerUI(winner) {
+            document.getElementById("countdown-container").style.display = "none";
+            document.getElementById("countdown-text").style.display = "none";
+            document.getElementById("loto-display").style.display = "none";
+            const winnerBox = document.getElementById("winner-box");
+            winnerBox.style.display = "block";
+            document.getElementById("winner-name").innerText = winner;
+        }
+
+        function lancerAnimationLoto(winnerName) {
+            officialWinner = winnerName;
+            winnerTimestamp = new Date().getTime();
+            localStorage.setItem('seb_winner', officialWinner);
+            localStorage.setItem('seb_winner_time', winnerTimestamp);
+
+            document.getElementById("countdown-container").style.display = "none";
+            document.getElementById("countdown-text").style.display = "none";
+            document.getElementById("winner-box").style.display = "none";
+            
+            const lotoDisplay = document.getElementById("loto-display");
+            lotoDisplay.style.display = "block";
+
+            const machine = document.getElementById("loto-machine");
+            machine.innerHTML = "";
+            document.getElementById("loto-title-status").innerText = "🎰 Le tirage est en cours en direct !";
+
+            if (participantsValid.length === 0) {
+                machine.innerHTML = "<h3 style='color:white; margin-top:100px;'>🚨 Aucun participant enregistré !</h3>";
+                return;
+            }
+
+            playDrumRollSound();
+
+            const ballColors = ['#fbbf24', '#38bdf8', '#34d399', '#f472b6', '#a78bfa', '#fb7185'];
+            let listToDisplay = [...participantsValid];
+            if (!listToDisplay.includes(winnerName)) listToDisplay.push(winnerName);
+            listToDisplay.sort(() => Math.random() - 0.5);
+            if (listToDisplay.length > 30) listToDisplay = listToDisplay.slice(0, 30);
+
+            let ballsData = [];
+            listToDisplay.forEach((nom, i) => {
+                const ballEl = document.createElement('div');
+                ballEl.className = 'loto-ball';
+                ballEl.style.setProperty('--ball-color', ballColors[i % ballColors.length]);
+                ballEl.innerText = nom;
+                machine.appendChild(ballEl);
+
+                ballsData.push({
+                    el: ballEl,
+                    name: nom,
+                    x: Math.random() * (machine.clientWidth - 52),
+                    y: Math.random() * (machine.clientHeight - 52),
+                    vx: (Math.random() - 0.5) * 10,
+                    vy: (Math.random() - 0.5) * 10
+                });
+            });
+
+            let startTime = Date.now();
+            let duration = 4000;
+
+            function updatePhysics() {
+                let elapsed = Date.now() - startTime;
+                if (elapsed < duration) {
+                    ballsData.forEach(b => {
+                        b.x += b.vx;
+                        b.y += b.vy;
+                        if (b.x <= 0 || b.x >= machine.clientWidth - 52) b.vx *= -1;
+                        if (b.y <= 0 || b.y >= machine.clientHeight - 52) b.vy *= -1;
+                        b.el.style.left = b.x + 'px';
+                        b.el.style.top = b.y + 'px';
+                    });
+                    requestAnimationFrame(updatePhysics);
+                } else {
+                    document.getElementById("loto-title-status").innerText = "🏆 Boule Gagnante !";
+
+                    let winningBallObj = ballsData.find(b => b.name === winnerName);
+                    if (!winningBallObj && ballsData.length > 0) winningBallObj = ballsData[0];
+
+                    if (winningBallObj) {
+                        ballsData.forEach(b => {
+                            if (b !== winningBallObj) {
+                                b.el.style.transition = "opacity 0.5s ease";
+                                b.el.style.opacity = "0.05";
+                            }
+                        });
+
+                        const winnerBall = winningBallObj.el;
+                        winnerBall.style.zIndex = "10000";
+
+                        const centerX = (machine.clientWidth / 2) - 85;
+                        const centerY = (machine.clientHeight / 2) - 85;
+
+                        winnerBall.style.transition = "all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
+                        winnerBall.style.left = centerX + "px";
+                        winnerBall.style.top = centerY + "px";
+                        winnerBall.style.width = "170px";
+                        winnerBall.style.height = "170px";
+                        winnerBall.style.fontSize = "15px";
+                        winnerBall.style.padding = "10px";
+                        winnerBall.style.boxShadow = "0 0 90px #34d399, 0 0 150px #fbbf24, inset -8px -8px 20px rgba(0,0,0,0.5)";
+                    }
+
+                    if (document.getElementById('victorySoundSelect').value === 'gong') {
+                        playGongSound();
+                    } else {
+                        playFanfareSound();
+                    }
+
+                    launchBalloons();
+
+                    setTimeout(() => {
+                        showWinnerUI(officialWinner);
+                        fireConfettiFromWinner();
+                    }, 3000);
+                }
+            }
+            requestAnimationFrame(updatePhysics);
+        }
+
+        function lancerTestTirage() {
+            if (participantsValid.length === 0) { alert("Ajoute des participants !"); return; }
+            lancerAnimationLoto(participantsValid[Math.floor(Math.random() * participantsValid.length)]);
+        }
+
+        function resetTirage() {
+            officialWinner = null;
+            winnerTimestamp = null;
+            localStorage.removeItem('seb_winner');
+            localStorage.removeItem('seb_winner_time');
+            
+            document.getElementById("loto-display").style.display = "none";
+            document.getElementById("winner-box").style.display = "none";
+            document.getElementById("countdown-container").style.display = "flex";
+            document.getElementById("countdown-text").style.display = "block";
+            
+            chargerInterface();
+            alert("🔄 Tirage réinitialisé avec succès !");
+        }
+
+        function resetData() {
+            if (confirm("Tout effacer ?")) { localStorage.clear(); location.reload(); }
+        }
+
+        chargerInterface();
+
+        setInterval(function() {
+            const now = new Date().getTime();
+            if (officialWinner !== null && winnerTimestamp !== null) {
+                const elapsed = now - winnerTimestamp;
+                const clockEl = document.getElementById("post-timer-clock");
+                if (clockEl) {
+                    clockEl.innerText = `${Math.floor(elapsed / (1000 * 60 * 60 * 24))}j ${Math.floor((elapsed % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))}h ${Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60))}m ${Math.floor((elapsed % (1000 * 60)) / 1000)}s`;
+                }
+            } else {
+                const distance = new Date(targetDateStr).getTime() - now;
+                if (distance <= 0) {
+                    if (participantsValid.length > 0 && officialWinner === null && !window.hasAutoTriggered) {
+                        window.hasAutoTriggered = true;
+                        lancerAnimationLoto(participantsValid[Math.floor(Math.random() * participantsValid.length)]);
+                    }
+                } else {
+                    document.getElementById("days").innerText = Math.floor(distance / (1000 * 60 * 60 * 24));
+                    document.getElementById("hours").innerText = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    document.getElementById("minutes").innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    document.getElementById("seconds").innerText = Math.floor((distance % (1000 * 60)) / 1000);
+                }
+            }
+        }, 1000);
     </script>
 </body>
 </html>
