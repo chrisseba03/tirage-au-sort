@@ -267,16 +267,11 @@
 
     <script>
         // =========================================================================
-        // 🎯 SOURCE UNIQUE MAITRE (C'est le seul endroit à modifier sur GitHub)
+        // 🎯 SOURCE UNIQUE MAITRE SUR GITHUB
         // =========================================================================
         
-        // 1. Date et heure officielles du tirage :
+        // Date et heure officielles du tirage (votre PC maître s'y réfère en premier) :
         const OFFICIAL_TARGET_DATE = "2026-10-04T20:00:00"; 
-
-        // 2. LE GAGNANT OFFICIEL : 
-        // Laisse cette variable vide ("") tant que le tirage n'a pas eu lieu (le compte à rebours tournera).
-        // Dès que tu veux forcer/afficher le gagnant (pour un test ou le jour J), mets son nom exact ici :
-        const FORCED_OFFICIAL_WINNER = ""; 
 
         // =========================================================================
 
@@ -297,12 +292,23 @@ Chaque boite porte son kilomètre de la N7 : 0 = Paris, 996 = Menton.
             "Lita Sylvain Audebert", "Martine Pellevent-Boudonnat", "Michel Poulet", "Nina Mes",
             "Patrice Anne-marie Noel", "Peggy Zanelletahc", "Sandra Jaubart", "Stephanie Renon",
             "Sue Lombrelle", "Veronique Avital Sebag", "Yolande Virlogeux", "Zaz Malleret"
-        ];
+        ].sort(); // Tri alphabétique strict pour un résultat identique sur tous les écrans
 
         const OFFICIAL_REFUSED = [
             { nom: "Seb Capturis", raison: "Admin" },
             { nom: "Frederic Pourchet", raison: "Organisateur" }
         ];
+
+        // Calcul mathématique synchro basé sur la date cible (zéro triche, même résultat partout)
+        function getSyncedWinner(participants, seedStr) {
+            let hash = 0;
+            for (let i = 0; i < seedStr.length; i++) {
+                hash = (hash << 5) - hash + seedStr.charCodeAt(i);
+                hash |= 0;
+            }
+            let index = Math.abs(hash) % participants.length;
+            return participants[index];
+        }
 
         function toggleTheme() {
             const current = document.documentElement.getAttribute('data-theme');
@@ -365,7 +371,7 @@ Chaque boite porte son kilomètre de la N7 : 0 = Paris, 996 = Menton.
             document.getElementById("count-valid").innerText = `✅ Participants Validés (${OFFICIAL_VALID.length})`;
             const ulValid = document.getElementById("list-valid");
             ulValid.innerHTML = "";
-            [...OFFICIAL_VALID].sort().forEach(p => {
+            OFFICIAL_VALID.forEach(p => {
                 ulValid.innerHTML += `<li><span>${p}</span></li>`;
             });
 
@@ -392,9 +398,9 @@ Chaque boite porte son kilomètre de la N7 : 0 = Paris, 996 = Menton.
 
             const ballColors = ['#fbbf24', '#38bdf8', '#34d399', '#f472b6', '#a78bfa', '#fb7185'];
             let listToDisplay = [...OFFICIAL_VALID];
-            if (!listToDisplay.includes(winnerName)) listToDisplay.push(winnerName);
             listToDisplay.sort(() => Math.random() - 0.5);
             if (listToDisplay.length > 30) listToDisplay = listToDisplay.slice(0, 30);
+            if (!listToDisplay.includes(winnerName)) listToDisplay.push(winnerName);
 
             let ballsData = [];
             listToDisplay.forEach((nom, i) => {
@@ -461,20 +467,21 @@ Chaque boite porte son kilomètre de la N7 : 0 = Paris, 996 = Menton.
 
         chargerInterface();
 
-        // Boucle simple de vérification du temps ou du gagnant forcé
+        // Variable pour s'assurer que le tirage ne se lance qu'une seule fois par session
+        let tirageLance = false;
+
+        // Horloge maître ultra-précise synchronisée
         setInterval(function() {
-            if (FORCED_OFFICIAL_WINNER !== "") {
-                // Si un gagnant est inscrit dans le code, on lance l'animation immédiatement sur tous les appareils
-                lancerAnimationLoto(FORCED_OFFICIAL_WINNER);
-                return;
-            }
+            if (tirageLance) return;
 
             const now = new Date().getTime();
-            const distance = new Date(OFFICIAL_TARGET_DATE).getTime() - now;
+            const targetTime = new Date(OFFICIAL_TARGET_DATE).getTime();
+            const distance = targetTime - now;
 
             if (distance <= 0) {
-                // Si l'heure est dépassée, on tire un gagnant aléatoire de manière identique ou on fige un gagnant
-                let finalWinner = OFFICIAL_VALID[0]; // Ou logique fixe
+                tirageLance = true;
+                // Votre PC (le maître) et tous les autres écrans déclenchent le même tirage mathématique synchro au même instant !
+                const finalWinner = getSyncedWinner(OFFICIAL_VALID, OFFICIAL_TARGET_DATE);
                 lancerAnimationLoto(finalWinner);
             } else {
                 document.getElementById("days").innerText = Math.floor(distance / (1000 * 60 * 60 * 24));
