@@ -267,12 +267,9 @@
 
     <script>
         // =========================================================================
-        // 🎯 SOURCE UNIQUE MAITRE SUR GITHUB
+        // 🎯 HEURE DE TEST FIXÉE AUJOURD'HUI À 10H04
         // =========================================================================
-        
-        // Date et heure officielles du tirage (votre PC maître s'y réfère en premier) :
-        const OFFICIAL_TARGET_DATE = "2026-10-04T20:00:00"; 
-
+        const OFFICIAL_TARGET_DATE = "2026-09-27T10:04:00"; 
         // =========================================================================
 
         const OFFICIAL_PRIZE = {
@@ -292,14 +289,13 @@ Chaque boite porte son kilomètre de la N7 : 0 = Paris, 996 = Menton.
             "Lita Sylvain Audebert", "Martine Pellevent-Boudonnat", "Michel Poulet", "Nina Mes",
             "Patrice Anne-marie Noel", "Peggy Zanelletahc", "Sandra Jaubart", "Stephanie Renon",
             "Sue Lombrelle", "Veronique Avital Sebag", "Yolande Virlogeux", "Zaz Malleret"
-        ].sort(); // Tri alphabétique strict pour un résultat identique sur tous les écrans
+        ].sort();
 
         const OFFICIAL_REFUSED = [
             { nom: "Seb Capturis", raison: "Admin" },
             { nom: "Frederic Pourchet", raison: "Organisateur" }
         ];
 
-        // Calcul mathématique synchro basé sur la date cible (zéro triche, même résultat partout)
         function getSyncedWinner(participants, seedStr) {
             let hash = 0;
             for (let i = 0; i < seedStr.length; i++) {
@@ -467,10 +463,8 @@ Chaque boite porte son kilomètre de la N7 : 0 = Paris, 996 = Menton.
 
         chargerInterface();
 
-        // Variable pour s'assurer que le tirage ne se lance qu'une seule fois par session
         let tirageLance = false;
 
-        // Horloge maître ultra-précise synchronisée
         setInterval(function() {
             if (tirageLance) return;
 
@@ -480,7 +474,6 @@ Chaque boite porte son kilomètre de la N7 : 0 = Paris, 996 = Menton.
 
             if (distance <= 0) {
                 tirageLance = true;
-                // Votre PC (le maître) et tous les autres écrans déclenchent le même tirage mathématique synchro au même instant !
                 const finalWinner = getSyncedWinner(OFFICIAL_VALID, OFFICIAL_TARGET_DATE);
                 lancerAnimationLoto(finalWinner);
             } else {
