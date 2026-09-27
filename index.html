@@ -85,7 +85,7 @@
             border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 20px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             display: flex;
             flex-direction: column;
             gap: 15px;
@@ -97,6 +97,36 @@
         .prize-title { color: #fbbf24; margin-top: 0; font-size: 20px; margin-bottom: 8px; }
         .prize-desc { color: var(--text-sub); font-size: 14px; line-height: 1.5; margin-bottom: 12px; white-space: pre-line; }
         .btn-shop { display: inline-block; background: var(--accent-color); color: #ffffff; padding: 8px 14px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 13px; }
+
+        /* Style de la bannière d'appel à l'action pour participer */
+        .participate-banner {
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), rgba(14, 165, 233, 0.25));
+            border: 2px dashed var(--accent-color);
+            border-radius: 12px;
+            padding: 18px;
+            text-align: center;
+            margin-bottom: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        .participate-text { font-size: 14px; color: var(--text-main); font-weight: 500; }
+        .btn-participate {
+            background: #2563eb;
+            color: #ffffff;
+            padding: 12px 24px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 15px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+            transition: transform 0.2s, background 0.2s;
+        }
+        .btn-participate:hover { background: #1d4ed8; transform: translateY(-2px); }
 
         .countdown-container { display: flex; justify-content: center; gap: 15px; margin-bottom: 20px; }
         .time-box { background: var(--card-bg); color: var(--text-main); padding: 15px; border-radius: 10px; min-width: 70px; text-align: center; border: 1px solid var(--border-color); }
@@ -269,6 +299,14 @@
             </div>
         </div>
 
+        <!-- Bannière stratégique pour participer -->
+        <div class="participate-banner">
+            <div class="participate-text">🎯 Vous souhaitez participer et tenter votre chance pour ce tirage ?</div>
+            <a href="https://www.facebook.com/groups/bouce/permalink/2566991197077728/" target="_blank" class="btn-participate">
+                <span>📝 Accéder à la publication pour participer</span>
+            </a>
+        </div>
+
         <div id="countdown-text" style="text-align: center; color: var(--text-sub); font-size: 14px; margin-bottom: 12px;">
             Ouverture du tirage le : <span id="target-date-str"></span>
         </div>
@@ -383,7 +421,6 @@ Chaque boite porte son kilomètre de la N7 : 0 = Paris, 996 = Menton.
         ];
 
         function initialiserCompteurVisites() {
-            // Utilisation d'une clé unique pour ton groupe Allier
             fetch('https://api.countapi.xyz/hit/laplaceduvillage03-tirage/visites')
                 .then(response => response.json())
                 .then(data => {
@@ -392,7 +429,6 @@ Chaque boite porte son kilomètre de la N7 : 0 = Paris, 996 = Menton.
                     }
                 })
                 .catch(error => {
-                    // Fallback local si l'API est bloquée par un bloqueur de pub
                     let localCount = localStorage.getItem('seb_fallback_views') || 128;
                     localCount = parseInt(localCount) + 1;
                     localStorage.setItem('seb_fallback_views', localCount);
