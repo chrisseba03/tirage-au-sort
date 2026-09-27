@@ -186,6 +186,26 @@
             border: 1px solid var(--border-color);
         }
 
+        #admin-panel {
+            display: none;
+            background: var(--card-bg);
+            border: 2px dashed var(--accent-color);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 25px;
+        }
+        #admin-panel h3 { color: var(--accent-color); margin-top: 0; }
+        .admin-controls { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px; }
+        .admin-group { margin-bottom: 15px; background: rgba(0,0,0,0.15); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); }
+        .admin-group label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 6px; color: var(--text-main); }
+        .admin-group input[type="datetime-local"] { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--item-bg); color: var(--text-main); box-sizing: border-box; font-family: inherit; font-size: 14px; }
+        
+        button { padding: 10px; border-radius: 8px; border: none; font-size: 14px; font-family: inherit; font-weight: bold; cursor: pointer; transition: background 0.2s; background: var(--accent-color); color: #fff; }
+        button:hover { background: var(--accent-hover); }
+        .btn-warning { background: #f59e0b; color: #0f172a; }
+        .btn-danger { background: #ef4444; color: #fff; }
+        .btn-secondary { background: #475569; color: #fff; }
+
         .footer {
             text-align: center;
             padding: 15px;
@@ -197,8 +217,27 @@
             max-width: 900px;
             box-sizing: border-box;
             margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
+        .footer-content { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
         .footer a { color: var(--accent-color); text-decoration: none; font-weight: bold; }
+        .footer-btn {
+            background: rgba(128, 128, 128, 0.1);
+            color: var(--text-sub);
+            border: 1px solid var(--border-color);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 14px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
     </style>
 </head>
 <body>
@@ -228,10 +267,10 @@
 
         <!-- Compte à rebours / Temps écoulé -->
         <div id="countdown-container" class="countdown-container">
-            <div class="time-box"><span id="days" class="time-value">0</span><span id="label-days" class="time-label">Jours</span></div>
-            <div class="time-box"><span id="hours" class="time-value">0</span><span id="label-hours" class="time-label">Heures</span></div>
-            <div class="time-box"><span id="minutes" class="time-value">0</span><span id="label-min" class="time-label">Min</span></div>
-            <div class="time-box"><span id="seconds" class="time-value">0</span><span id="label-sec" class="time-label">Sec</span></div>
+            <div class="time-box"><span id="days" class="time-value">0</span><span class="time-label">Jours</span></div>
+            <div class="time-box"><span id="hours" class="time-value">0</span><span class="time-label">Heures</span></div>
+            <div class="time-box"><span id="minutes" class="time-value">0</span><span class="time-label">Min</span></div>
+            <div class="time-box"><span id="seconds" class="time-value">0</span><span class="time-label">Sec</span></div>
         </div>
         <div id="countdown-text" style="text-align: center; color: var(--text-sub); font-size: 14px; margin-bottom: 20px;">
             Ouverture du tirage le : <span id="target-date-str"></span>
@@ -240,9 +279,7 @@
         <!-- Machine à boules -->
         <div id="loto-display">
             <h2 id="loto-title-status" style="margin: 0 0 5px 0; font-size: 20px; color: var(--accent-color);">🎰 Le tirage est en cours en direct !</h2>
-            <div class="loto-machine" id="loto-machine">
-                <!-- Les ballons animés réapparaissent ici pendant le tirage -->
-            </div>
+            <div class="loto-machine" id="loto-machine"></div>
         </div>
 
         <!-- Résultat gagnant -->
@@ -261,17 +298,37 @@
                 <ul id="list-refused"></ul>
             </div>
         </div>
+
+        <!-- Panneau Admin Intégré -->
+        <div id="admin-panel">
+            <h3>🛠️ Panneau Administrateur</h3>
+            <div class="admin-group">
+                <label for="admin-target-input">📅 Modifier la date et l'heure officielle du tirage :</label>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <input type="datetime-local" id="admin-target-input" style="flex: 1;">
+                    <button onclick="mettreAJourDateCible()" class="btn-secondary">Appliquer</button>
+                </div>
+            </div>
+            <div class="admin-controls">
+                <button onclick="lancerTestTirageImmediat()" class="btn-warning" style="flex: 1;">🎲 Lancer un tirage test immédiat</button>
+                <button onclick="reinitialiserAdmin()" class="btn-danger">🔄 Réinitialiser</button>
+            </div>
+        </div>
     </div>
 
     <div class="footer">
-        Codé par Seb Capturis pour <a href="https://www.facebook.com/groups/bouce/" target="_blank">La Place du Village - ALLIER (03)</a> 🌲🏡
+        <div class="footer-content">
+            Codé par Seb Capturis pour <a href="https://www.facebook.com/groups/bouce/" target="_blank">La Place du Village - ALLIER (03)</a> 🌲🏡
+            <button class="footer-btn" onclick="demanderMotDePasse()" title="Admin">🔒</button>
+        </div>
     </div>
 
     <script>
         // =========================================================================
-        // 🎯 HEURE DE TEST (modifiez ici pour vos futurs tirages)
+        // 🎯 HEURE DU TIRAGE PROGRAMMÉE À 14H20
         // =========================================================================
-        const OFFICIAL_TARGET_DATE = "2026-09-27T10:04:00"; 
+        const ADMIN_PASSWORD = "a";
+        let OFFICIAL_TARGET_DATE = localStorage.getItem('seb_custom_target_date') || "2026-09-27T14:20:00"; 
         // =========================================================================
 
         const OFFICIAL_PRIZE = {
@@ -314,6 +371,39 @@ Chaque boite porte son kilomètre de la N7 : 0 = Paris, 996 = Menton.
             document.documentElement.setAttribute('data-theme', next);
             document.getElementById('theme-icon').innerText = next === 'dark' ? '☀️' : '🌙';
             document.getElementById('theme-text').innerText = next === 'dark' ? 'Mode Clair' : 'Mode Sombre';
+        }
+
+        function demanderMotDePasse() {
+            const mdp = prompt("Mot de passe administrateur :");
+            if (mdp === ADMIN_PASSWORD) {
+                document.getElementById("admin-panel").style.display = "block";
+                document.getElementById("admin-target-input").value = OFFICIAL_TARGET_DATE;
+                alert("🔓 Mode administrateur activé !");
+            } else if (mdp !== null) {
+                alert("❌ Mot de passe incorrect !");
+            }
+        }
+
+        function mettreAJourDateCible() {
+            const nouvelleDate = document.getElementById("admin-target-input").value;
+            if (nouvelleDate) {
+                OFFICIAL_TARGET_DATE = nouvelleDate;
+                localStorage.setItem('seb_custom_target_date', nouvelleDate);
+                alert("📅 Date du tirage mise à jour !");
+                location.reload();
+            }
+        }
+
+        function reinitialiserAdmin() {
+            if (confirm("Réinitialiser les réglages admin ?")) {
+                localStorage.removeItem('seb_custom_target_date');
+                location.reload();
+            }
+        }
+
+        function lancerTestTirageImmediat() {
+            const winner = OFFICIAL_VALID[Math.floor(Math.random() * OFFICIAL_VALID.length)];
+            lancerAnimationLoto(winner);
         }
 
         function playDrumroll() {
@@ -381,17 +471,15 @@ Chaque boite porte son kilomètre de la N7 : 0 = Paris, 996 = Menton.
             });
         }
 
-        // Affichage direct sans animation si on arrive après coup
         function afficherGagnantDirect(winnerName) {
-            document.getElementById("countdown-container").style.display = "none";
-            document.getElementById("countdown-text").style.display = "none";
+            document.getElementById("countdown-container").style.display = "flex";
+            document.getElementById("countdown-text").style.display = "block";
             document.getElementById("loto-display").style.display = "none";
             
             const wBox = document.getElementById("winner-box");
             wBox.style.display = "block";
             document.getElementById("winner-name").innerText = winnerName;
             
-            // Petits confettis festifs d'accueil direct
             confetti({ particleCount: 50, spread: 70, origin: { y: 0.6 } });
         }
 
@@ -483,7 +571,6 @@ Chaque boite porte son kilomètre de la N7 : 0 = Paris, 996 = Menton.
         const targetTimeInitial = new Date(OFFICIAL_TARGET_DATE).getTime();
         const finalWinner = getSyncedWinner(OFFICIAL_VALID, OFFICIAL_TARGET_DATE);
 
-        // Si on arrive DIRECTEMENT après l'heure du tirage : affichage figé direct
         if (nowInitial >= targetTimeInitial) {
             afficherGagnantDirect(finalWinner);
         }
@@ -496,12 +583,10 @@ Chaque boite porte son kilomètre de la N7 : 0 = Paris, 996 = Menton.
             const distance = targetTime - now;
 
             if (distance <= 0) {
-                // Si l'heure est atteinte pile pendant qu'on est sur la page
                 if (!tirageLance && document.getElementById("winner-box").style.display !== "block" && document.getElementById("loto-display").style.display !== "block") {
                     tirageLance = true;
                     lancerAnimationLoto(finalWinner);
                 } else if (tirageLance || document.getElementById("winner-box").style.display === "block") {
-                    // Mode affichage du temps écoulé après le tirage
                     const elapsed = now - targetTime;
                     document.getElementById("days").innerText = Math.floor(elapsed / (1000 * 60 * 60 * 24));
                     document.getElementById("hours").innerText = Math.floor((elapsed % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -509,11 +594,8 @@ Chaque boite porte son kilomètre de la N7 : 0 = Paris, 996 = Menton.
                     document.getElementById("seconds").innerText = Math.floor((elapsed % (1000 * 60)) / 1000);
                     
                     document.getElementById("countdown-text").innerHTML = "Le tirage a eu lieu il y a :";
-                    document.getElementById("countdown-text").style.display = "block";
-                    document.getElementById("countdown-container").style.display = "flex";
                 }
             } else {
-                // Compte à rebours avant le tirage
                 document.getElementById("days").innerText = Math.floor(distance / (1000 * 60 * 60 * 24));
                 document.getElementById("hours").innerText = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 document.getElementById("minutes").innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
