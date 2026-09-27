@@ -327,10 +327,10 @@
 
     <script>
         // =========================================================================
-        // 🎯 HEURE DU TIRAGE PROGRAMMÉE À 15H00 (ou test direct)
+        // 🎯 HEURE DU TIRAGE PROGRAMMÉE À 18H05
         // =========================================================================
         const ADMIN_PASSWORD = "a";
-        let OFFICIAL_TARGET_DATE = localStorage.getItem('seb_custom_target_date') || "2026-09-27T15:00:00"; 
+        let OFFICIAL_TARGET_DATE = localStorage.getItem('seb_custom_target_date') || "2026-09-27T18:05:00"; 
         // =========================================================================
 
         const OFFICIAL_PRIZE = {
@@ -482,7 +482,7 @@ Chaque boite porte son kilomètre de la N7 : 0 = Paris, 996 = Menton.
         }
 
         function lancerAnimationLoto(winnerName) {
-            document.getElementById("countdown-container").style.display = "flex"; // On garde visible pour le temps écoulé après
+            document.getElementById("countdown-container").style.display = "flex";
             document.getElementById("loto-display").style.display = "block";
             document.getElementById("winner-box").style.display = "none";
 
@@ -572,7 +572,6 @@ Chaque boite porte son kilomètre de la N7 : 0 = Paris, 996 = Menton.
 
         let tirageLance = false;
 
-        // Boucle universelle synchronisée (gère le compte à rebours ET le temps écoulé en direct)
         setInterval(function() {
             const now = new Date().getTime();
             const targetTime = new Date(OFFICIAL_TARGET_DATE).getTime();
@@ -584,14 +583,13 @@ Chaque boite porte son kilomètre de la N7 : 0 = Paris, 996 = Menton.
                     lancerAnimationLoto(finalWinner);
                 }
                 
-                // Calcul permanent du temps écoulé (fonctionne tout de suite sans réactualiser)
                 const elapsed = now - targetTime;
                 document.getElementById("days").innerText = Math.floor(elapsed / (1000 * 60 * 60 * 24));
                 document.getElementById("hours").innerText = Math.floor((elapsed % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 document.getElementById("minutes").innerText = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
                 document.getElementById("seconds").innerText = Math.floor((elapsed % (1000 * 60)) / 1000);
                 
-                document.getElementById("countdown-text").innerHTML = "Le tirage a eu lieu il y a :";
+                document.getElementById("countdown-text").innerHTML = "Le tirage au sort a eu lieu il y a :";
             } else {
                 document.getElementById("days").innerText = Math.floor(distance / (1000 * 60 * 60 * 24));
                 document.getElementById("hours").innerText = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
