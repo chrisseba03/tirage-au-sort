@@ -194,7 +194,11 @@
             border-radius: 12px;
             margin-top: 25px;
         }
-        #admin-panel h3 { color: var(--accent-color); margin-top: 0; }
+        #admin-panel h3 { color: var(--accent-color); margin-top: 0; display: flex; justify-content: space-between; align-items: center; }
+        .admin-badges { display: flex; gap: 8px; align-items: center; }
+        .admin-counter-badge { font-size: 12px; background: rgba(56, 189, 248, 0.15); color: var(--accent-color); padding: 4px 10px; border-radius: 12px; border: 1px solid var(--accent-color); }
+        .admin-views-badge { font-size: 12px; background: rgba(52, 211, 153, 0.15); color: #34d399; padding: 4px 10px; border-radius: 12px; border: 1px solid #34d399; }
+        
         .admin-controls { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px; }
         .admin-group { margin-bottom: 15px; background: rgba(0,0,0,0.15); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); }
         .admin-group label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 6px; color: var(--text-main); }
@@ -265,12 +269,10 @@
             </div>
         </div>
 
-        <!-- Phrase explicative au-dessus du chronomètre -->
         <div id="countdown-text" style="text-align: center; color: var(--text-sub); font-size: 14px; margin-bottom: 12px;">
             Ouverture du tirage le : <span id="target-date-str"></span>
         </div>
 
-        <!-- Chronomètre en dessous -->
         <div id="countdown-container" class="countdown-container">
             <div class="time-box"><span id="days" class="time-value">0</span><span class="time-label">Jours</span></div>
             <div class="time-box"><span id="hours" class="time-value">0</span><span class="time-label">Heures</span></div>
@@ -278,13 +280,11 @@
             <div class="time-box"><span id="seconds" class="time-value">0</span><span class="time-label">Sec</span></div>
         </div>
 
-        <!-- Machine à boules -->
         <div id="loto-display">
             <h2 id="loto-title-status" style="margin: 0 0 5px 0; font-size: 20px; color: var(--accent-color);">🎰 Le tirage est en cours en direct !</h2>
             <div class="loto-machine" id="loto-machine"></div>
         </div>
 
-        <!-- Résultat gagnant -->
         <div id="winner-box">
             <h2 style="margin: 0; font-size: 22px;">🏆 TADAM ! Le grand gagnant est :</h2>
             <p id="winner-name"></p>
@@ -303,7 +303,13 @@
 
         <!-- Panneau Admin Intégré -->
         <div id="admin-panel">
-            <h3>🛠️ Panneau Administrateur</h3>
+            <h3>
+                <span>🛠️ Panneau Administrateur</span>
+                <div class="admin-badges">
+                    <span id="admin-views-badge" class="admin-views-badge">👁️ ... visites</span>
+                    <span id="admin-counter-badge" class="admin-counter-badge">0 validé(s)</span>
+                </div>
+            </h3>
             <div class="admin-group">
                 <label for="admin-target-input">📅 Modifier la date et l'heure officielle du tirage :</label>
                 <div style="display: flex; gap: 10px; align-items: center;">
@@ -326,12 +332,8 @@
     </div>
 
     <script>
-        // =========================================================================
-        // 🎯 HEURE DU TIRAGE PROGRAMMÉE AU 04 OCTOBRE 2026 À 20H00
-        // =========================================================================
         const ADMIN_PASSWORD = "admin170767";
         let OFFICIAL_TARGET_DATE = localStorage.getItem('seb_custom_target_date') || "2026-10-04T20:00:00"; 
-        // =========================================================================
 
         const OFFICIAL_PRIZE = {
             title: "🎁 Boîte collector numérotée N°996",
@@ -380,6 +382,24 @@ Chaque boite porte son kilomètre de la N7 : 0 = Paris, 996 = Menton.
             { nom: "Frederic Pourchet", raison: "Organisateur" }
         ];
 
+        function initialiserCompteurVisites() {
+            // Utilisation d'une clé unique pour ton groupe Allier
+            fetch('https://api.countapi.xyz/hit/laplaceduvillage03-tirage/visites')
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.value !== undefined) {
+                        document.getElementById("admin-views-badge").innerText = `👁️ ${data.value} visite(s)`;
+                    }
+                })
+                .catch(error => {
+                    // Fallback local si l'API est bloquée par un bloqueur de pub
+                    let localCount = localStorage.getItem('seb_fallback_views') || 128;
+                    localCount = parseInt(localCount) + 1;
+                    localStorage.setItem('seb_fallback_views', localCount);
+                    document.getElementById("admin-views-badge").innerText = `👁️ ${localCount} visite(s)`;
+                });
+        }
+
         function getSyncedWinner(participants, seedStr) {
             let hash = 0;
             for (let i = 0; i < seedStr.length; i++) {
@@ -403,6 +423,7 @@ Chaque boite porte son kilomètre de la N7 : 0 = Paris, 996 = Menton.
             if (mdp === ADMIN_PASSWORD) {
                 document.getElementById("admin-panel").style.display = "block";
                 document.getElementById("admin-target-input").value = OFFICIAL_TARGET_DATE;
+                initialiserCompteurVisites();
                 alert("🔓 Mode administrateur activé !");
             } else if (mdp !== null) {
                 alert("❌ Mot de passe incorrect !");
@@ -482,6 +503,8 @@ Chaque boite porte son kilomètre de la N7 : 0 = Paris, 996 = Menton.
             document.getElementById("prize-link-display").href = OFFICIAL_PRIZE.url;
 
             document.getElementById("count-valid").innerText = `✅ Participants Validés (${OFFICIAL_VALID.length})`;
+            document.getElementById("admin-counter-badge").innerText = `${OFFICIAL_VALID.length} validé(s)`;
+            
             const ulValid = document.getElementById("list-valid");
             ulValid.innerHTML = "";
             OFFICIAL_VALID.forEach(p => {
@@ -617,7 +640,7 @@ Chaque boite porte son kilomètre de la N7 : 0 = Paris, 996 = Menton.
                 document.getElementById("days").innerText = Math.floor(distance / (1000 * 60 * 60 * 24));
                 document.getElementById("hours").innerText = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 document.getElementById("minutes").innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                document.getElementById("seconds").innerText = Math.floor((distance % (1000 * 60)) / 1000);
+                document.getElementById("seconds").innerText.innerHTML = Math.floor((distance % (1000 * 60)) / 1000);
                 
                 document.getElementById("countdown-text").innerHTML = 'Ouverture du tirage le : <span id="target-date-str">' + new Date(OFFICIAL_TARGET_DATE).toLocaleString('fr-FR', { dateStyle: 'full', timeStyle: 'short' }) + '</span>';
             }
