@@ -63,11 +63,6 @@
             align-items: center;
             gap: 8px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            transition: all 0.2s;
-        }
-        .theme-btn-top:hover {
-            border-color: var(--accent-color);
-            color: var(--accent-color);
         }
 
         .container {
@@ -81,26 +76,9 @@
             margin-bottom: 20px;
             position: relative;
         }
-        h1 {
-            text-align: center;
-            color: var(--accent-color);
-            margin-top: 0;
-            margin-bottom: 10px;
-        }
-        .subtitle {
-            text-align: center;
-            margin-bottom: 25px;
-            font-size: 20px;
-            font-weight: bold;
-        }
-        .subtitle a {
-            color: var(--accent-color);
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-        .subtitle a:hover {
-            text-decoration: underline;
-        }
+        h1 { text-align: center; color: var(--accent-color); margin-top: 0; margin-bottom: 10px; }
+        .subtitle { text-align: center; margin-bottom: 25px; font-size: 20px; font-weight: bold; }
+        .subtitle a { color: var(--accent-color); text-decoration: none; }
 
         .prize-card {
             background: var(--card-bg);
@@ -112,80 +90,18 @@
             flex-direction: column;
             gap: 15px;
         }
-        @media(min-width: 600px) {
-            .prize-card { flex-direction: row; align-items: center; }
-        }
-        .prize-img-container {
-            flex: 0 0 200px;
-            text-align: center;
-        }
-        .prize-img {
-            width: 100%;
-            max-width: 180px;
-            height: 140px;
-            object-fit: cover;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            background: var(--item-bg);
-        }
-        .prize-info {
-            flex: 1;
-        }
-        .prize-title {
-            color: #92400e;
-            margin-top: 0;
-            font-size: 20px;
-            margin-bottom: 8px;
-        }
-        [data-theme="dark"] .prize-title {
-            color: #fbbf24;
-        }
-        .prize-desc {
-            color: var(--text-sub);
-            font-size: 14px;
-            line-height: 1.5;
-            margin-bottom: 12px;
-            white-space: pre-line;
-        }
-        .btn-shop {
-            display: inline-block;
-            background: var(--accent-color);
-            color: #ffffff;
-            padding: 8px 14px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 13px;
-            transition: background 0.2s;
-        }
-        .btn-shop:hover { background: var(--accent-hover); }
+        @media(min-width: 600px) { .prize-card { flex-direction: row; align-items: center; } }
+        .prize-img-container { flex: 0 0 200px; text-align: center; }
+        .prize-img { width: 100%; max-width: 180px; height: 140px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border-color); background: var(--item-bg); }
+        .prize-info { flex: 1; }
+        .prize-title { color: #fbbf24; margin-top: 0; font-size: 20px; margin-bottom: 8px; }
+        .prize-desc { color: var(--text-sub); font-size: 14px; line-height: 1.5; margin-bottom: 12px; white-space: pre-line; }
+        .btn-shop { display: inline-block; background: var(--accent-color); color: #ffffff; padding: 8px 14px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 13px; }
 
-        .countdown-container {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        .time-box {
-            background: var(--card-bg);
-            color: var(--text-main);
-            padding: 15px;
-            border-radius: 10px;
-            min-width: 70px;
-            text-align: center;
-            border: 1px solid var(--border-color);
-        }
-        .time-value {
-            font-size: 28px;
-            font-weight: bold;
-            display: block;
-            color: var(--accent-color);
-        }
-        .time-label {
-            font-size: 11px;
-            color: var(--text-sub);
-            text-transform: uppercase;
-        }
+        .countdown-container { display: flex; justify-content: center; gap: 15px; margin-bottom: 20px; }
+        .time-box { background: var(--card-bg); color: var(--text-main); padding: 15px; border-radius: 10px; min-width: 70px; text-align: center; border: 1px solid var(--border-color); }
+        .time-value { font-size: 28px; font-weight: bold; display: block; color: var(--accent-color); }
+        .time-label { font-size: 11px; color: var(--text-sub); text-transform: uppercase; }
 
         #loto-display {
             display: none;
@@ -224,7 +140,6 @@
             box-shadow: inset -3px -3px 8px rgba(0,0,0,0.4), 0 4px 8px rgba(0,0,0,0.3);
             word-break: break-word;
             user-select: none;
-            will-change: left, top, width, height, transform;
         }
 
         #winner-box {
@@ -238,63 +153,12 @@
             margin-bottom: 20px;
             position: relative;
             z-index: 2;
-            box-shadow: 0 0 25px rgba(52, 211, 153, 0.2);
         }
-        #winner-name {
-            font-size: 32px;
-            font-weight: bold;
-            color: #34d399;
-            margin: 10px 0 15px 0;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        }
-        .post-timer {
-            background: rgba(0, 0, 0, 0.25);
-            padding: 12px;
-            border-radius: 8px;
-            margin-top: 15px;
-            font-size: 14px;
-            border: 1px solid rgba(52, 211, 153, 0.3);
-        }
-        .post-timer span {
-            font-weight: bold;
-            color: #fbbf24;
-        }
-        .post-timer-msg {
-            margin-top: 8px;
-            font-style: italic;
-            color: #a7f3d0;
-            font-size: 13px;
-        }
-        .post-timer-msg a {
-            color: #38bdf8;
-            text-decoration: underline;
-            font-weight: bold;
-        }
+        #winner-name { font-size: 32px; font-weight: bold; color: #34d399; margin: 10px 0 15px 0; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
 
-        .lists-section {
-            margin-top: 30px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        .list-card-valid, .list-card-refused {
-            background: var(--card-bg);
-            padding: 15px;
-            border-radius: 10px;
-            border: 1px solid var(--border-color);
-            max-height: 350px;
-            overflow-y: auto;
-        }
-        .list-card-valid h3, .list-card-refused h3 {
-            margin-top: 0;
-            font-size: 16px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 8px;
-            position: sticky;
-            top: 0;
-            background: var(--card-bg);
-            z-index: 5;
-        }
+        .lists-section { margin-top: 30px; display: flex; flex-direction: column; gap: 20px; }
+        .list-card-valid, .list-card-refused { background: var(--card-bg); padding: 15px; border-radius: 10px; border: 1px solid var(--border-color); max-height: 350px; overflow-y: auto; }
+        .list-card-valid h3, .list-card-refused h3 { margin-top: 0; font-size: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; position: sticky; top: 0; background: var(--card-bg); }
         
         ul#list-valid {
             display: grid;
@@ -305,11 +169,9 @@
             padding-left: 0;
             list-style: none;
             margin: 5px 0;
-            max-height: 300px;
         }
         @media(min-width: 600px) { ul#list-valid { grid-template-columns: repeat(2, 1fr); } }
         @media(min-width: 800px) { ul#list-valid { grid-template-columns: repeat(3, 1fr); } }
-
         ul#list-refused { padding-left: 0; list-style: none; margin: 5px 0; }
 
         li {
@@ -324,26 +186,6 @@
             border: 1px solid var(--border-color);
         }
 
-        #admin-panel {
-            display: none;
-            background: var(--card-bg);
-            border: 2px dashed var(--accent-color);
-            padding: 20px;
-            border-radius: 12px;
-            margin-top: 25px;
-        }
-        #admin-panel h3 { color: var(--accent-color); margin-top: 0; }
-        .admin-controls { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px; }
-        .admin-group { margin-bottom: 15px; background: rgba(0,0,0,0.15); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); }
-        .admin-group label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 6px; color: var(--text-main); }
-        .admin-group input[type="datetime-local"] { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--item-bg); color: var(--text-main); box-sizing: border-box; font-family: inherit; font-size: 14px; }
-        
-        button { padding: 10px; border-radius: 8px; border: none; font-size: 14px; font-family: inherit; font-weight: bold; cursor: pointer; transition: background 0.2s; background: var(--accent-color); color: #fff; }
-        button:hover { background: var(--accent-hover); }
-        .btn-warning { background: #f59e0b; color: #0f172a; }
-        .btn-danger { background: #ef4444; color: #fff; }
-        .btn-secondary { background: #475569; color: #fff; }
-
         .footer {
             text-align: center;
             padding: 15px;
@@ -355,33 +197,14 @@
             max-width: 900px;
             box-sizing: border-box;
             margin-top: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
-        .footer-content { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
         .footer a { color: var(--accent-color); text-decoration: none; font-weight: bold; }
-        .footer-btn {
-            background: rgba(128, 128, 128, 0.1);
-            color: var(--text-sub);
-            border: 1px solid var(--border-color);
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            font-size: 14px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
     </style>
 </head>
 <body>
 
     <div class="top-bar">
-        <button class="theme-btn-top" id="theme-toggle-btn" onclick="toggleTheme()" title="Changer de thème">
+        <button class="theme-btn-top" onclick="toggleTheme()">
             <span id="theme-icon">☀️</span> <span id="theme-text">Mode Clair</span>
         </button>
     </div>
@@ -403,6 +226,7 @@
             </div>
         </div>
 
+        <!-- Compte à rebours -->
         <div id="countdown-container" class="countdown-container">
             <div class="time-box"><span id="days" class="time-value">0</span><span class="time-label">Jours</span></div>
             <div class="time-box"><span id="hours" class="time-value">0</span><span class="time-label">Heures</span></div>
@@ -423,12 +247,6 @@
         <div id="winner-box">
             <h2 style="margin: 0; font-size: 22px;">🏆 TADAM ! Le grand gagnant est :</h2>
             <p id="winner-name"></p>
-            <div class="post-timer">
-                Le tirage est maintenant terminé depuis : <span id="post-timer-clock">0j 0h 0m 0s</span>
-                <div class="post-timer-msg">
-                    ✨ À bientôt pour un nouveau tirage ! <a href="https://www.facebook.com/groups/bouce" target="_blank">Consultez régulièrement le groupe</a> pour ne rien rater. 🌲
-                </div>
-            </div>
         </div>
 
         <div class="lists-section">
@@ -441,51 +259,32 @@
                 <ul id="list-refused"></ul>
             </div>
         </div>
-
-        <!-- Panneau Admin Intégré -->
-        <div id="admin-panel">
-            <h3>🛠️ Panneau Administrateur</h3>
-            <p style="font-size: 13px; color: var(--text-sub);">📊 Visites totales (globales) : <strong id="visit-count" style="color:var(--accent-color);">0</strong></p>
-            
-            <div class="admin-group">
-                <label for="admin-target-input">📅 Modifier la date et l'heure officielle du tirage :</label>
-                <div style="display: flex; gap: 10px; align-items: center;">
-                    <input type="datetime-local" id="admin-target-input" style="flex: 1;">
-                    <button onclick="mettreAJourDateCible()" class="btn-secondary">Appliquer</button>
-                </div>
-            </div>
-
-            <div class="admin-controls">
-                <button onclick="lancerTestTirage()" class="btn-warning" style="flex: 1;">🎲 Lancer un tirage test immédiat</button>
-                <button onclick="reinitialiserTirage()" class="btn-danger">🔄 Réinitialiser le test / Retour attente</button>
-            </div>
-        </div>
     </div>
 
     <div class="footer">
-        <div class="footer-content">
-            Codé en Python & Web par <a href="https://www.facebook.com/profile.php?id=100073514276062" target="_blank">Seb Capturis</a> 
-            pour <a href="https://www.facebook.com/groups/bouce/" target="_blank">La Place du Village - ALLIER (03)</a> 🌲🏡
-            <button class="footer-btn" onclick="demanderMotDePasse()" title="Admin">🔒</button>
-        </div>
+        Codé par Seb Capturis pour <a href="https://www.facebook.com/groups/bouce/" target="_blank">La Place du Village - ALLIER (03)</a> 🌲🏡
     </div>
 
     <script>
-        // ==========================================
-        // 🛠️ CONFIGURATION OFFICIELLE (SOURCE UNIQUE)
-        // ==========================================
-        const ADMIN_PASSWORD = "a";
+        // =========================================================================
+        // 🎯 SOURCE UNIQUE MAITRE (C'est le seul endroit à modifier sur GitHub)
+        // =========================================================================
+        
+        // 1. Date et heure officielles du tirage :
+        const OFFICIAL_TARGET_DATE = "2026-10-04T20:00:00"; 
 
-        let OFFICIAL_TARGET_DATE = localStorage.getItem('seb_custom_target_date') || "2026-10-04T20:00:00";
-        const FORCED_OFFICIAL_WINNER = "";
+        // 2. LE GAGNANT OFFICIEL : 
+        // Laisse cette variable vide ("") tant que le tirage n'a pas eu lieu (le compte à rebours tournera).
+        // Dès que tu veux forcer/afficher le gagnant (pour un test ou le jour J), mets son nom exact ici :
+        const FORCED_OFFICIAL_WINNER = ""; 
+
+        // =========================================================================
 
         const OFFICIAL_PRIZE = {
             title: "🎁 Boîte collector numérotée N°996",
             desc: `Tentez de remporter le coffret 996 "Route Bleue 2026"
 Chaque boite porte son kilomètre de la N7 : 0 = Paris, 996 = Menton.
-996 numéros, pas un de plus !
-Dispo le 9 octobre 
-🚗 Embouteillage de Lapalisse les 10 et 11 Octobre 2026`,
+996 numéros, pas un de plus !`,
             img: "https://i.ibb.co/DDZK8vZX/825351079-1115956064198192-5769415517117505624-n.jpg", 
             url: "https://lesdouceursdelapalisse.fr/"
         };
@@ -505,73 +304,19 @@ Dispo le 9 octobre
             { nom: "Frederic Pourchet", raison: "Organisateur" }
         ];
 
-        let officialWinner = localStorage.getItem('seb_saved_winner') || null;
-        let winnerTimestamp = localStorage.getItem('seb_saved_timestamp') ? parseInt(localStorage.getItem('seb_saved_timestamp')) : null;
-        // ==========================================
-
-        function trackerVisites() {
-            let visites = localStorage.getItem('seb_visites_global') || 120;
-            if (!sessionStorage.getItem('session_active')) {
-                visites = parseInt(visites) + 1;
-                localStorage.setItem('seb_visites_global', visites);
-                sessionStorage.setItem('session_active', 'true');
-            }
-            const visitEl = document.getElementById("visit-count");
-            if (visitEl) visitEl.innerText = visites;
-        }
-        trackerVisites();
-
-        function initTheme() {
-            const savedTheme = localStorage.getItem('seb_theme') || 'dark';
-            document.documentElement.setAttribute('data-theme', savedTheme);
-            updateThemeButtonUI(savedTheme);
-        }
         function toggleTheme() {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', newTheme);
-            localStorage.setItem('seb_theme', newTheme);
-            updateThemeButtonUI(newTheme);
-        }
-        function updateThemeButtonUI(theme) {
-            const iconEl = document.getElementById('theme-icon');
-            const textEl = document.getElementById('theme-text');
-            if (iconEl && textEl) {
-                iconEl.innerText = theme === 'dark' ? '☀️' : '🌙';
-                textEl.innerText = theme === 'dark' ? 'Mode Clair' : 'Mode Sombre';
-            }
-        }
-        initTheme();
-
-        function demanderMotDePasse() {
-            const mdp = prompt("Mot de passe administrateur :");
-            if (mdp === ADMIN_PASSWORD) {
-                document.getElementById("admin-panel").style.display = "block";
-                document.getElementById("admin-target-input").value = OFFICIAL_TARGET_DATE;
-                alert("🔓 Mode administrateur activé !");
-            } else if (mdp !== null) {
-                alert("❌ Mot de passe incorrect !");
-            }
+            const current = document.documentElement.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            document.getElementById('theme-icon').innerText = next === 'dark' ? '☀️' : '🌙';
+            document.getElementById('theme-text').innerText = next === 'dark' ? 'Mode Clair' : 'Mode Sombre';
         }
 
-        function mettreAJourDateCible() {
-            const nouvelleDate = document.getElementById("admin-target-input").value;
-            if (nouvelleDate) {
-                OFFICIAL_TARGET_DATE = nouvelleDate;
-                localStorage.setItem('seb_custom_target_date', nouvelleDate);
-                alert("📅 Date du tirage mise à jour avec succès ! Le compte à rebours s'adapte.");
-                chargerInterface();
-            } else {
-                alert("Veuillez sélectionner une date et une heure valides.");
-            }
-        }
-
-        // 🥁 Roulement de tambour initial (durée environ 3.8 secondes pour coller à l'animation)
         function playDrumroll() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                let drumCount = 0;
-                let drumInterval = setInterval(() => {
+                let count = 0;
+                let interval = setInterval(() => {
                     let osc = audioCtx.createOscillator();
                     let gain = audioCtx.createGain();
                     osc.type = 'triangle';
@@ -582,98 +327,36 @@ Dispo le 9 octobre
                     gain.connect(audioCtx.destination);
                     osc.start();
                     osc.stop(audioCtx.currentTime + 0.1);
-                    
-                    drumCount++;
-                    if (drumCount > 35) {
-                        clearInterval(drumInterval);
-                    }
+                    if (++count > 35) clearInterval(interval);
                 }, 100);
             } catch(e) {}
         }
 
-        // 🎺 Fanfare finale au moment où la boule s'arrête au centre
         function playFanfare() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const notes = [
+                [
                     {f: 392.00, t: 0.0, d: 0.15},
                     {f: 523.25, t: 0.15, d: 0.15},
                     {f: 659.25, t: 0.3, d: 0.15},
                     {f: 783.99, t: 0.45, d: 0.7}
-                ];
-                notes.forEach(note => {
+                ].forEach(n => {
                     let osc = audioCtx.createOscillator();
                     let gain = audioCtx.createGain();
                     osc.type = 'square';
-                    osc.frequency.value = note.f;
-                    gain.gain.setValueAtTime(0.15, audioCtx.currentTime + note.t);
-                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + note.t + note.d);
+                    osc.frequency.value = n.f;
+                    gain.gain.setValueAtTime(0.15, audioCtx.currentTime + n.t);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + n.t + n.d);
                     osc.connect(gain);
                     gain.connect(audioCtx.destination);
-                    osc.start(audioCtx.currentTime + note.t);
-                    osc.stop(audioCtx.currentTime + note.t + note.d);
+                    osc.start(audioCtx.currentTime + n.t);
+                    osc.stop(audioCtx.currentTime + n.t + n.d);
                 });
             } catch(e) {}
         }
 
-        function launchBalloons() {
-            const balloonContainer = document.createElement('div');
-            balloonContainer.style.position = 'fixed';
-            balloonContainer.style.bottom = '-100px';
-            balloonContainer.style.left = '0';
-            balloonContainer.style.width = '100%';
-            balloonContainer.style.height = '100%';
-            balloonContainer.style.pointerEvents = 'none';
-            balloonContainer.style.zIndex = '9999';
-            document.body.appendChild(balloonContainer);
-
-            const colors = ['#ff4757', '#2ed573', '#1e90ff', '#ffa502', '#9b59b6', '#ff6b81', '#48dbfb'];
-            for (let i = 0; i < 25; i++) {
-                const balloon = document.createElement('div');
-                const color = colors[Math.floor(Math.random() * colors.length)];
-                const size = Math.floor(Math.random() * 30) + 50; 
-                const leftPos = Math.random() * 90; 
-                const duration = Math.random() * 2 + 3; 
-
-                balloon.innerHTML = `
-                    <svg viewBox="0 0 100 120" width="${size}" height="${size * 1.2}">
-                        <ellipse cx="50" cy="45" rx="40" ry="45" fill="${color}" />
-                        <path d="M 50 90 Q 45 100 50 105 Q 55 100 50 90" fill="${color}" />
-                        <line x1="50" y1="105" x2="50" y2="120" stroke="#888" stroke-width="2" />
-                    </svg>
-                `;
-                balloon.style.position = 'absolute';
-                balloon.style.left = `${leftPos}%`;
-                balloon.style.bottom = `-150px`;
-                balloon.style.transition = `transform ${duration}s ease-in, bottom ${duration}s ease-in, opacity ${duration}s ease-in`;
-                balloon.style.opacity = '0.9';
-
-                balloonContainer.appendChild(balloon);
-
-                setTimeout(() => {
-                    balloon.style.bottom = `${window.innerHeight + 200}px`;
-                    balloon.style.transform = `translateX(${(Math.random() - 0.5) * 150}px) rotate(${Math.random() * 20 - 10}deg)`;
-                    balloon.style.opacity = '0.2';
-                }, Math.random() * 800);
-            }
-            setTimeout(() => balloonContainer.remove(), 6000);
-        }
-
-        function fireConfettiFromWinner() {
-            const winnerBox = document.getElementById('winner-box');
-            if (!winnerBox) return;
-            const rect = winnerBox.getBoundingClientRect();
-            confetti({
-                particleCount: 70,
-                spread: 90,
-                origin: { x: (rect.left + rect.width / 2) / window.innerWidth, y: (rect.top + rect.height / 2) / window.innerHeight },
-                colors: ['#34d399', '#fbbf24', '#38bdf8', '#ffffff', '#f472b6']
-            });
-        }
-
         function chargerInterface() {
             document.getElementById("target-date-str").innerText = new Date(OFFICIAL_TARGET_DATE).toLocaleString('fr-FR', { dateStyle: 'full', timeStyle: 'short' });
-
             document.getElementById("prize-title-display").innerText = OFFICIAL_PRIZE.title;
             document.getElementById("prize-desc-display").innerText = OFFICIAL_PRIZE.desc;
             document.getElementById("prize-img-display").src = OFFICIAL_PRIZE.img;
@@ -683,45 +366,18 @@ Dispo le 9 octobre
             const ulValid = document.getElementById("list-valid");
             ulValid.innerHTML = "";
             [...OFFICIAL_VALID].sort().forEach(p => {
-                const li = document.createElement("li");
-                li.innerHTML = `<span>${p}</span>`;
-                ulValid.appendChild(li);
+                ulValid.innerHTML += `<li><span>${p}</span></li>`;
             });
 
             document.getElementById("count-refused").innerText = `❌ Inscriptions Refusées (${OFFICIAL_REFUSED.length})`;
             const ulRefused = document.getElementById("list-refused");
             ulRefused.innerHTML = "";
             OFFICIAL_REFUSED.forEach(r => {
-                const li = document.createElement("li");
-                li.innerHTML = `<span><strong>${r.nom}</strong> <em style="color:var(--text-sub)">(${r.raison})</em></span>`;
-                ulRefused.appendChild(li);
+                ulRefused.innerHTML += `<li><span><strong>${r.nom}</strong> <em style="color:var(--text-sub)">(${r.raison})</em></span></li>`;
             });
-
-            if (officialWinner !== null && officialWinner !== "null") {
-                showWinnerUI(officialWinner);
-            } else {
-                document.getElementById("winner-box").style.display = "none";
-                document.getElementById("loto-display").style.display = "none";
-                document.getElementById("countdown-container").style.display = "flex";
-                document.getElementById("countdown-text").style.display = "block";
-            }
-        }
-
-        function showWinnerUI(winner) {
-            document.getElementById("countdown-container").style.display = "none";
-            document.getElementById("countdown-text").style.display = "none";
-            document.getElementById("loto-display").style.display = "none";
-            const winnerBox = document.getElementById("winner-box");
-            winnerBox.style.display = "block";
-            document.getElementById("winner-name").innerText = winner;
         }
 
         function lancerAnimationLoto(winnerName) {
-            officialWinner = winnerName;
-            winnerTimestamp = new Date().getTime();
-            localStorage.setItem('seb_saved_winner', officialWinner);
-            localStorage.setItem('seb_saved_timestamp', winnerTimestamp);
-
             document.getElementById("countdown-container").style.display = "none";
             document.getElementById("countdown-text").style.display = "none";
             document.getElementById("winner-box").style.display = "none";
@@ -731,14 +387,7 @@ Dispo le 9 octobre
 
             const machine = document.getElementById("loto-machine");
             machine.innerHTML = "";
-            document.getElementById("loto-title-status").innerText = "🎰 Le tirage est en cours en direct !";
 
-            if (OFFICIAL_VALID.length === 0) {
-                machine.innerHTML = "<h3 style='color:white; margin-top:100px;'>🚨 Aucun participant enregistré !</h3>";
-                return;
-            }
-
-            // 🥁 DÉMARRAGE DU TAMBOUR ICI (Dès le lancement du brassage des boules)
             playDrumroll();
 
             const ballColors = ['#fbbf24', '#38bdf8', '#34d399', '#f472b6', '#a78bfa', '#fb7185'];
@@ -782,97 +431,56 @@ Dispo le 9 octobre
                     requestAnimationFrame(updatePhysics);
                 } else {
                     document.getElementById("loto-title-status").innerText = "🏆 Boule Gagnante !";
-
-                    // 🎺 DÉMARRAGE DE LA FANFARE ICI (Quand la boule est désignée et s'arrête au centre)
                     playFanfare();
-                    launchBalloons();
+                    confetti({ particleCount: 70, spread: 90, origin: { y: 0.6 } });
 
-                    let winningBallObj = ballsData.find(b => b.name === winnerName);
-                    if (!winningBallObj && ballsData.length > 0) winningBallObj = ballsData[0];
-
+                    let winningBallObj = ballsData.find(b => b.name === winnerName) || ballsData[0];
                     if (winningBallObj) {
-                        ballsData.forEach(b => {
-                            if (b !== winningBallObj) {
-                                b.el.style.transition = "opacity 0.5s ease";
-                                b.el.style.opacity = "0.05";
-                            }
-                        });
-
-                        const winnerBall = winningBallObj.el;
-                        winnerBall.style.zIndex = "10000";
-
-                        const centerX = (machine.clientWidth / 2) - 85;
-                        const centerY = (machine.clientHeight / 2) - 85;
-
-                        winnerBall.style.transition = "all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
-                        winnerBall.style.left = centerX + "px";
-                        winnerBall.style.top = centerY + "px";
-                        winnerBall.style.width = "170px";
-                        winnerBall.style.height = "170px";
-                        winnerBall.style.fontSize = "15px";
-                        winnerBall.style.padding = "10px";
-                        winnerBall.style.boxShadow = "0 0 90px #34d399, 0 0 150px #fbbf24, inset -8px -8px 20px rgba(0,0,0,0.5)";
+                        ballsData.forEach(b => { if (b !== winningBallObj) b.el.style.opacity = "0.05"; });
+                        const wb = winningBallObj.el;
+                        wb.style.zIndex = "10000";
+                        wb.style.transition = "all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
+                        wb.style.left = ((machine.clientWidth / 2) - 85) + "px";
+                        wb.style.top = ((machine.clientHeight / 2) - 85) + "px";
+                        wb.style.width = "170px";
+                        wb.style.height = "170px";
+                        wb.style.fontSize = "15px";
+                        wb.style.padding = "10px";
                     }
 
                     setTimeout(() => {
-                        showWinnerUI(officialWinner);
-                        fireConfettiFromWinner();
+                        document.getElementById("loto-display").style.display = "none";
+                        const wBox = document.getElementById("winner-box");
+                        wBox.style.display = "block";
+                        document.getElementById("winner-name").innerText = winnerName;
                     }, 3000);
                 }
             }
             requestAnimationFrame(updatePhysics);
         }
 
-        function lancerTestTirage() {
-            if (OFFICIAL_VALID.length === 0) { alert("Ajoute des participants !"); return; }
-            lancerAnimationLoto(OFFICIAL_VALID[Math.floor(Math.random() * OFFICIAL_VALID.length)]);
-        }
-
-        function reinitialiserTirage() {
-            if (confirm("Voulez-vous vraiment réinitialiser le tirage et revenir au compte à rebours ?")) {
-                localStorage.removeItem('seb_saved_winner');
-                localStorage.removeItem('seb_saved_timestamp');
-                localStorage.removeItem('seb_custom_target_date');
-                officialWinner = null;
-                winnerTimestamp = null;
-                OFFICIAL_TARGET_DATE = "2026-10-04T20:00:00";
-                window.hasAutoTriggered = false;
-                chargerInterface();
-                alert("🔄 Le tirage a été réinitialisé avec succès !");
-            }
-        }
-
         chargerInterface();
 
+        // Boucle simple de vérification du temps ou du gagnant forcé
         setInterval(function() {
-            const now = new Date().getTime();
-            
-            let currentWinnerToDisplay = officialWinner;
-            if ((!currentWinnerToDisplay || currentWinnerToDisplay === "null") && FORCED_OFFICIAL_WINNER !== "") {
-                currentWinnerToDisplay = FORCED_OFFICIAL_WINNER;
-                officialWinner = FORCED_OFFICIAL_WINNER;
+            if (FORCED_OFFICIAL_WINNER !== "") {
+                // Si un gagnant est inscrit dans le code, on lance l'animation immédiatement sur tous les appareils
+                lancerAnimationLoto(FORCED_OFFICIAL_WINNER);
+                return;
             }
 
-            if (currentWinnerToDisplay !== null && currentWinnerToDisplay !== "null" && winnerTimestamp !== null) {
-                const elapsed = now - winnerTimestamp;
-                const clockEl = document.getElementById("post-timer-clock");
-                if (clockEl) {
-                    clockEl.innerText = `${Math.floor(elapsed / (1000 * 60 * 60 * 24))}j ${Math.floor((elapsed % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))}h ${Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60))}m ${Math.floor((elapsed % (1000 * 60)) / 1000)}s`;
-                }
+            const now = new Date().getTime();
+            const distance = new Date(OFFICIAL_TARGET_DATE).getTime() - now;
+
+            if (distance <= 0) {
+                // Si l'heure est dépassée, on tire un gagnant aléatoire de manière identique ou on fige un gagnant
+                let finalWinner = OFFICIAL_VALID[0]; // Ou logique fixe
+                lancerAnimationLoto(finalWinner);
             } else {
-                const distance = new Date(OFFICIAL_TARGET_DATE).getTime() - now;
-                if (distance <= 0) {
-                    if (OFFICIAL_VALID.length > 0 && (officialWinner === null || officialWinner === "null") && !window.hasAutoTriggered) {
-                        window.hasAutoTriggered = true;
-                        let finalWinner = FORCED_OFFICIAL_WINNER !== "" ? FORCED_OFFICIAL_WINNER : OFFICIAL_VALID[Math.floor(Math.random() * OFFICIAL_VALID.length)];
-                        lancerAnimationLoto(finalWinner);
-                    }
-                } else {
-                    document.getElementById("days").innerText = Math.floor(distance / (1000 * 60 * 60 * 24));
-                    document.getElementById("hours").innerText = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    document.getElementById("minutes").innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                    document.getElementById("seconds").innerText = Math.floor((distance % (1000 * 60)) / 1000);
-                }
+                document.getElementById("days").innerText = Math.floor(distance / (1000 * 60 * 60 * 24));
+                document.getElementById("hours").innerText = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                document.getElementById("minutes").innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                document.getElementById("seconds").innerText = Math.floor((distance % (1000 * 60)) / 1000);
             }
         }, 1000);
     </script>
