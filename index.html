@@ -265,15 +265,17 @@
             </div>
         </div>
 
-        <!-- Compte à rebours / Temps écoulé -->
+        <!-- Phrase explicative au-dessus du chronomètre -->
+        <div id="countdown-text" style="text-align: center; color: var(--text-sub); font-size: 14px; margin-bottom: 12px;">
+            Ouverture du tirage le : <span id="target-date-str"></span>
+        </div>
+
+        <!-- Chronomètre en dessous -->
         <div id="countdown-container" class="countdown-container">
             <div class="time-box"><span id="days" class="time-value">0</span><span class="time-label">Jours</span></div>
             <div class="time-box"><span id="hours" class="time-value">0</span><span class="time-label">Heures</span></div>
             <div class="time-box"><span id="minutes" class="time-value">0</span><span class="time-label">Min</span></div>
             <div class="time-box"><span id="seconds" class="time-value">0</span><span class="time-label">Sec</span></div>
-        </div>
-        <div id="countdown-text" style="text-align: center; color: var(--text-sub); font-size: 14px; margin-bottom: 20px;">
-            Ouverture du tirage le : <span id="target-date-str"></span>
         </div>
 
         <!-- Machine à boules -->
@@ -325,10 +327,10 @@
 
     <script>
         // =========================================================================
-        // 🎯 HEURE DU TIRAGE PROGRAMMÉE À 14H25
+        // 🎯 HEURE DU TIRAGE PROGRAMMÉE À 14H30
         // =========================================================================
         const ADMIN_PASSWORD = "a";
-        let OFFICIAL_TARGET_DATE = localStorage.getItem('seb_custom_target_date') || "2026-09-27T14:25:00"; 
+        let OFFICIAL_TARGET_DATE = localStorage.getItem('seb_custom_target_date') || "2026-09-27T14:30:00"; 
         // =========================================================================
 
         const OFFICIAL_PRIZE = {
@@ -390,14 +392,14 @@ Chaque boite porte son kilomètre de la N7 : 0 = Paris, 996 = Menton.
                 OFFICIAL_TARGET_DATE = nouvelleDate;
                 localStorage.setItem('seb_custom_target_date', nouvelleDate);
                 alert("📅 Date du tirage mise à jour !");
-                location.reload();
+                location.reload(true);
             }
         }
 
         function reinitialiserAdmin() {
             if (confirm("Réinitialiser les réglages admin ?")) {
                 localStorage.removeItem('seb_custom_target_date');
-                location.reload();
+                location.reload(true);
             }
         }
 
@@ -472,14 +474,10 @@ Chaque boite porte son kilomètre de la N7 : 0 = Paris, 996 = Menton.
         }
 
         function afficherGagnantDirect(winnerName) {
-            document.getElementById("countdown-container").style.display = "flex";
-            document.getElementById("countdown-text").style.display = "block";
             document.getElementById("loto-display").style.display = "none";
-            
             const wBox = document.getElementById("winner-box");
             wBox.style.display = "block";
             document.getElementById("winner-name").innerText = winnerName;
-            
             confetti({ particleCount: 50, spread: 70, origin: { y: 0.6 } });
         }
 
