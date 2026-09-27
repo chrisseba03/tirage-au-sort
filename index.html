@@ -334,10 +334,15 @@
         }
         #admin-panel h3 { color: var(--accent-color); margin-top: 0; }
         .admin-controls { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px; }
+        .admin-group { margin-bottom: 15px; background: rgba(0,0,0,0.15); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); }
+        .admin-group label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 6px; color: var(--text-main); }
+        .admin-group input[type="datetime-local"] { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--item-bg); color: var(--text-main); box-sizing: border-box; font-family: inherit; font-size: 14px; }
+        
         button { padding: 10px; border-radius: 8px; border: none; font-size: 14px; font-family: inherit; font-weight: bold; cursor: pointer; transition: background 0.2s; background: var(--accent-color); color: #fff; }
         button:hover { background: var(--accent-hover); }
         .btn-warning { background: #f59e0b; color: #0f172a; }
         .btn-danger { background: #ef4444; color: #fff; }
+        .btn-secondary { background: #475569; color: #fff; }
 
         .footer {
             text-align: center;
@@ -437,12 +442,22 @@
             </div>
         </div>
 
+        <!-- Panneau Admin Intégré -->
         <div id="admin-panel">
             <h3>🛠️ Panneau Administrateur</h3>
             <p style="font-size: 13px; color: var(--text-sub);">📊 Visites totales (globales) : <strong id="visit-count" style="color:var(--accent-color);">0</strong></p>
+            
+            <div class="admin-group">
+                <label for="admin-target-input">📅 Modifier la date et l'heure officielle du tirage :</label>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <input type="datetime-local" id="admin-target-input" style="flex: 1;">
+                    <button onclick="mettreAJourDateCible()" class="btn-secondary">Appliquer</button>
+                </div>
+            </div>
+
             <div class="admin-controls">
                 <button onclick="lancerTestTirage()" class="btn-warning" style="flex: 1;">🎲 Lancer un tirage test immédiat</button>
-                <button onclick="reinitialiserTirage()" class="btn-danger">🔄 Réinitialiser le test (Retour attente)</button>
+                <button onclick="reinitialiserTirage()" class="btn-danger">🔄 Réinitialiser le test / Retour attente</button>
             </div>
         </div>
     </div>
@@ -461,10 +476,12 @@
         // ==========================================
         const ADMIN_PASSWORD = "admin170767";
 
-        // Date et heure de fin : Dimanche 4 Octobre 2026 à 20:00
-        const OFFICIAL_TARGET_DATE = "2026-10-04T20:00:00";
+        // Date par défaut (Dimanche 4 Octobre 2026 à 20:00) ou récupérée depuis le localStorage admin
+        let OFFICIAL_TARGET_DATE = localStorage.getItem('seb_custom_target_date') || "2026-10-04T20:00:00";
 
-        // Informations exactes du lot (avec le lien image direct corrigé)
+        // Optionnel : Si vous voulez forcer un nom de gagnant spécifique à l'avance
+        const FORCED_OFFICIAL_WINNER = "";
+
         const OFFICIAL_PRIZE = {
             title: "🎁 Boîte collector numérotée N°996",
             desc: `Tentez de remporter le coffret 996 "Route Bleue 2026"
@@ -476,7 +493,6 @@ Dispo le 9 octobre
             url: "https://lesdouceursdelapalisse.fr/"
         };
 
-        // Liste officielle des 28 participants validés
         const OFFICIAL_VALID = [
             "Arlette Saintandré", "Aude Dclr", "Benoit Bonin", "Brigitte Cleret Blettery",
             "Chantal Dajoux", "Chloe Dillenseger", "Christelle Sauvestre", "Christophe Brasseur",
@@ -487,7 +503,6 @@ Dispo le 9 octobre
             "Sue Lombrelle", "Veronique Avital Sebag", "Yolande Virlogeux", "Zaz Malleret"
         ];
 
-        // Liste officielle des inscriptions refusées
         const OFFICIAL_REFUSED = [
             { nom: "Seb Capturis", raison: "Admin" },
             { nom: "Frederic Pourchet", raison: "Organisateur" }
@@ -497,9 +512,8 @@ Dispo le 9 octobre
         let winnerTimestamp = localStorage.getItem('seb_saved_timestamp') ? parseInt(localStorage.getItem('seb_saved_timestamp')) : null;
         // ==========================================
 
-        // Compteur de visites global simulé propre (stocké sur l'appareil mais incrémenté sans mention restrictive)
         function trackerVisites() {
-            let visites = localStorage.getItem('seb_visites_global') || 120; // Base de départ réaliste
+            let visites = localStorage.getItem('seb_visites_global') || 120;
             if (!sessionStorage.getItem('session_active')) {
                 visites = parseInt(visites) + 1;
                 localStorage.setItem('seb_visites_global', visites);
@@ -535,35 +549,68 @@ Dispo le 9 octobre
         function demanderMotDePasse() {
             const mdp = prompt("Mot de passe administrateur :");
             if (mdp === ADMIN_PASSWORD) {
-                isAdminLoggedIn = true;
                 document.getElementById("admin-panel").style.display = "block";
+                // Remplir le champ input date avec la valeur actuelle au format datetime-local
+                document.getElementById("admin-target-input").value = OFFICIAL_TARGET_DATE;
                 alert("🔓 Mode administrateur activé !");
             } else if (mdp !== null) {
                 alert("❌ Mot de passe incorrect !");
             }
         }
 
-        function playFanfareSound() {
+        function mettreAJourDateCible() {
+            const nouvelleDate = document.getElementById("admin-target-input").value;
+            if (nouvelleDate) {
+                OFFICIAL_TARGET_DATE = nouvelleDate;
+                localStorage.setItem('seb_custom_target_date', nouvelleDate);
+                alert("📅 Date du tirage mise à jour avec succès ! Le compte à rebours s'adapte.");
+                chargerInterface();
+            } else {
+                alert("Veuillez sélectionner une date et une heure valides.");
+            }
+        }
+
+        function playDrumrollAndFanfare() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const notes = [
-                    {f: 392.00, t: 0.0, d: 0.15},
-                    {f: 523.25, t: 0.15, d: 0.15},
-                    {f: 659.25, t: 0.3, d: 0.15},
-                    {f: 783.99, t: 0.45, d: 0.5}
-                ];
-                notes.forEach(note => {
+                let drumCount = 0;
+                let drumInterval = setInterval(() => {
                     let osc = audioCtx.createOscillator();
                     let gain = audioCtx.createGain();
-                    osc.type = 'square';
-                    osc.frequency.value = note.f;
-                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime + note.t);
-                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + note.t + note.d);
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(100 + Math.random() * 30, audioCtx.currentTime);
+                    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
                     osc.connect(gain);
                     gain.connect(audioCtx.destination);
-                    osc.start(audioCtx.currentTime + note.t);
-                    osc.stop(audioCtx.currentTime + note.t + note.d);
-                });
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.1);
+                    
+                    drumCount++;
+                    if (drumCount > 18) {
+                        clearInterval(drumInterval);
+                        setTimeout(() => {
+                            const notes = [
+                                {f: 392.00, t: 0.0, d: 0.15},
+                                {f: 523.25, t: 0.15, d: 0.15},
+                                {f: 659.25, t: 0.3, d: 0.15},
+                                {f: 783.99, t: 0.45, d: 0.6}
+                            ];
+                            notes.forEach(note => {
+                                let osc2 = audioCtx.createOscillator();
+                                let gain2 = audioCtx.createGain();
+                                osc2.type = 'square';
+                                osc2.frequency.value = note.f;
+                                gain2.gain.setValueAtTime(0.12, audioCtx.currentTime + note.t);
+                                gain2.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + note.t + note.d);
+                                osc2.connect(gain2);
+                                gain2.connect(audioCtx.destination);
+                                osc2.start(audioCtx.currentTime + note.t);
+                                osc2.stop(audioCtx.currentTime + note.t + note.d);
+                            });
+                        }, 200);
+                    }
+                }, 100);
             } catch(e) {}
         }
 
@@ -758,7 +805,7 @@ Dispo le 9 octobre
                         winnerBall.style.boxShadow = "0 0 90px #34d399, 0 0 150px #fbbf24, inset -8px -8px 20px rgba(0,0,0,0.5)";
                     }
 
-                    playFanfareSound();
+                    playDrumrollAndFanfare();
                     launchBalloons();
 
                     setTimeout(() => {
@@ -779,8 +826,11 @@ Dispo le 9 octobre
             if (confirm("Voulez-vous vraiment réinitialiser le tirage et revenir au compte à rebours ?")) {
                 localStorage.removeItem('seb_saved_winner');
                 localStorage.removeItem('seb_saved_timestamp');
+                localStorage.removeItem('seb_custom_target_date');
                 officialWinner = null;
                 winnerTimestamp = null;
+                OFFICIAL_TARGET_DATE = "2026-10-04T20:00:00";
+                window.hasAutoTriggered = false;
                 chargerInterface();
                 alert("🔄 Le tirage a été réinitialisé avec succès !");
             }
@@ -790,7 +840,14 @@ Dispo le 9 octobre
 
         setInterval(function() {
             const now = new Date().getTime();
-            if (officialWinner !== null && officialWinner !== "null" && winnerTimestamp !== null) {
+            
+            let currentWinnerToDisplay = officialWinner;
+            if ((!currentWinnerToDisplay || currentWinnerToDisplay === "null") && FORCED_OFFICIAL_WINNER !== "") {
+                currentWinnerToDisplay = FORCED_OFFICIAL_WINNER;
+                officialWinner = FORCED_OFFICIAL_WINNER;
+            }
+
+            if (currentWinnerToDisplay !== null && currentWinnerToDisplay !== "null" && winnerTimestamp !== null) {
                 const elapsed = now - winnerTimestamp;
                 const clockEl = document.getElementById("post-timer-clock");
                 if (clockEl) {
@@ -801,7 +858,9 @@ Dispo le 9 octobre
                 if (distance <= 0) {
                     if (OFFICIAL_VALID.length > 0 && (officialWinner === null || officialWinner === "null") && !window.hasAutoTriggered) {
                         window.hasAutoTriggered = true;
-                        lancerAnimationLoto(OFFICIAL_VALID[Math.floor(Math.random() * OFFICIAL_VALID.length)]);
+                        let finalWinner = FORCED_OFFICIAL_WINNER !== "" ? FORCED_OFFICIAL_WINNER : OFFICIAL_VALID[Math.floor(Math.random() * OFFICIAL_VALID.length)];
+                        lancerAnimationLotonew = finalWinner;
+                        lancerAnimationLoto(finalWinner);
                     }
                 } else {
                     document.getElementById("days").innerText = Math.floor(distance / (1000 * 60 * 60 * 24));
