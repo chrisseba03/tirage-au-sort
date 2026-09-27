@@ -312,8 +312,8 @@
                 </div>
             </div>
             <div class="admin-controls">
-                <button onclick="lancerTestTirageImmediat()" class="btn-warning" style="flex: 1;">🎲 Lancer un tirage test immédiat</button>
-                <button onclick="reinitialiserAdmin()" class="btn-danger">🔄 Réinitialiser</button>
+                <button onclick="lancerTestTirageImmediat()" class="btn-warning" style="flex: 1;">🎲 Lancer un test immédiat</button>
+                <button onclick="reinitialiserTirage()" class="btn-danger" style="flex: 1;">🔄 Réinitialiser (Retour au Compte à rebours)</button>
             </div>
         </div>
     </div>
@@ -396,8 +396,8 @@ Chaque boite porte son kilomètre de la N7 : 0 = Paris, 996 = Menton.
             }
         }
 
-        function reinitialiserAdmin() {
-            if (confirm("Réinitialiser les réglages admin ?")) {
+        function reinitialiserTirage() {
+            if (confirm("Voulez-vous réinitialiser le tirage pour revenir au compte à rebours ?")) {
                 localStorage.removeItem('seb_custom_target_date');
                 location.reload(true);
             }
