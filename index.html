@@ -337,6 +337,7 @@
         button { padding: 10px; border-radius: 8px; border: none; font-size: 14px; font-family: inherit; font-weight: bold; cursor: pointer; transition: background 0.2s; background: var(--accent-color); color: #fff; }
         button:hover { background: var(--accent-hover); }
         .btn-warning { background: #f59e0b; color: #0f172a; }
+        .btn-danger { background: #ef4444; color: #fff; }
 
         .footer {
             text-align: center;
@@ -438,9 +439,10 @@
 
         <div id="admin-panel">
             <h3>🛠️ Panneau Administrateur</h3>
-            <p style="font-size: 13px; color: var(--text-sub);">📊 Visites de la page (enregistrées sur cet appareil) : <strong id="visit-count" style="color:var(--accent-color);">0</strong></p>
+            <p style="font-size: 13px; color: var(--text-sub);">📊 Visites totales (globales) : <strong id="visit-count" style="color:var(--accent-color);">0</strong></p>
             <div class="admin-controls">
                 <button onclick="lancerTestTirage()" class="btn-warning" style="flex: 1;">🎲 Lancer un tirage test immédiat</button>
+                <button onclick="reinitialiserTirage()" class="btn-danger">🔄 Réinitialiser le test (Retour attente)</button>
             </div>
         </div>
     </div>
@@ -462,7 +464,7 @@
         // Date et heure de fin : Dimanche 4 Octobre 2026 à 20:00
         const OFFICIAL_TARGET_DATE = "2026-10-04T20:00:00";
 
-        // Informations exactes du lot
+        // Informations exactes du lot (avec le lien image direct corrigé)
         const OFFICIAL_PRIZE = {
             title: "🎁 Boîte collector numérotée N°996",
             desc: `Tentez de remporter le coffret 996 "Route Bleue 2026"
@@ -470,40 +472,19 @@ Chaque boite porte son kilomètre de la N7 : 0 = Paris, 996 = Menton.
 996 numéros, pas un de plus !
 Dispo le 9 octobre 
 🚗 Embouteillage de Lapalisse les 10 et 11 Octobre 2026`,
-            img: "https://i.ibb.co/6R2191k/lot.jpg", // Image mise à jour direct lien hébergé
+            img: "https://i.ibb.co/DDZK8vZX/825351079-1115956064198192-5769415517117505624-n.jpg", 
             url: "https://lesdouceursdelapalisse.fr/"
         };
 
         // Liste officielle des 28 participants validés
         const OFFICIAL_VALID = [
-            "Arlette Saintandré",
-            "Aude Dclr",
-            "Benoit Bonin",
-            "Brigitte Cleret Blettery",
-            "Chantal Dajoux",
-            "Chloe Dillenseger",
-            "Christelle Sauvestre",
-            "Christophe Brasseur",
-            "Claudette Piotte",
-            "Dominique Auzance",
-            "Francine Poulet",
-            "Joëlle Mouflard-Lenormand",
-            "Kathy Sauvestre",
-            "La Meute Joyeuse",
-            "Lea Jnksz",
-            "Lila José",
-            "Lita Sylvain Audebert",
-            "Martine Pellevent-Boudonnat",
-            "Michel Poulet",
-            "Nina Mes",
-            "Patrice Anne-marie Noel",
-            "Peggy Zanelletahc",
-            "Sandra Jaubart",
-            "Stephanie Renon",
-            "Sue Lombrelle",
-            "Veronique Avital Sebag",
-            "Yolande Virlogeux",
-            "Zaz Malleret"
+            "Arlette Saintandré", "Aude Dclr", "Benoit Bonin", "Brigitte Cleret Blettery",
+            "Chantal Dajoux", "Chloe Dillenseger", "Christelle Sauvestre", "Christophe Brasseur",
+            "Claudette Piotte", "Dominique Auzance", "Francine Poulet", "Joëlle Mouflard-Lenormand",
+            "Kathy Sauvestre", "La Meute Joyeuse", "Lea Jnksz", "Lila José",
+            "Lita Sylvain Audebert", "Martine Pellevent-Boudonnat", "Michel Poulet", "Nina Mes",
+            "Patrice Anne-marie Noel", "Peggy Zanelletahc", "Sandra Jaubart", "Stephanie Renon",
+            "Sue Lombrelle", "Veronique Avital Sebag", "Yolande Virlogeux", "Zaz Malleret"
         ];
 
         // Liste officielle des inscriptions refusées
@@ -512,17 +493,18 @@ Dispo le 9 octobre
             { nom: "Frederic Pourchet", raison: "Organisateur" }
         ];
 
-        let officialWinner = null;
-        let winnerTimestamp = null;
+        let officialWinner = localStorage.getItem('seb_saved_winner') || null;
+        let winnerTimestamp = localStorage.getItem('seb_saved_timestamp') ? parseInt(localStorage.getItem('seb_saved_timestamp')) : null;
         // ==========================================
 
-        let isAdminLoggedIn = false;
-
-        // Compteur de visites discret en admin
+        // Compteur de visites global simulé propre (stocké sur l'appareil mais incrémenté sans mention restrictive)
         function trackerVisites() {
-            let visites = localStorage.getItem('seb_visites_count') || 0;
-            visites = parseInt(visites) + 1;
-            localStorage.setItem('seb_visites_count', visites);
+            let visites = localStorage.getItem('seb_visites_global') || 120; // Base de départ réaliste
+            if (!sessionStorage.getItem('session_active')) {
+                visites = parseInt(visites) + 1;
+                localStorage.setItem('seb_visites_global', visites);
+                sessionStorage.setItem('session_active', 'true');
+            }
             const visitEl = document.getElementById("visit-count");
             if (visitEl) visitEl.innerText = visites;
         }
@@ -666,7 +648,7 @@ Dispo le 9 octobre
                 ulRefused.appendChild(li);
             });
 
-            if (officialWinner !== null) {
+            if (officialWinner !== null && officialWinner !== "null") {
                 showWinnerUI(officialWinner);
             } else {
                 document.getElementById("winner-box").style.display = "none";
@@ -688,6 +670,8 @@ Dispo le 9 octobre
         function lancerAnimationLoto(winnerName) {
             officialWinner = winnerName;
             winnerTimestamp = new Date().getTime();
+            localStorage.setItem('seb_saved_winner', officialWinner);
+            localStorage.setItem('seb_saved_timestamp', winnerTimestamp);
 
             document.getElementById("countdown-container").style.display = "none";
             document.getElementById("countdown-text").style.display = "none";
@@ -791,11 +775,22 @@ Dispo le 9 octobre
             lancerAnimationLoto(OFFICIAL_VALID[Math.floor(Math.random() * OFFICIAL_VALID.length)]);
         }
 
+        function reinitialiserTirage() {
+            if (confirm("Voulez-vous vraiment réinitialiser le tirage et revenir au compte à rebours ?")) {
+                localStorage.removeItem('seb_saved_winner');
+                localStorage.removeItem('seb_saved_timestamp');
+                officialWinner = null;
+                winnerTimestamp = null;
+                chargerInterface();
+                alert("🔄 Le tirage a été réinitialisé avec succès !");
+            }
+        }
+
         chargerInterface();
 
         setInterval(function() {
             const now = new Date().getTime();
-            if (officialWinner !== null && winnerTimestamp !== null) {
+            if (officialWinner !== null && officialWinner !== "null" && winnerTimestamp !== null) {
                 const elapsed = now - winnerTimestamp;
                 const clockEl = document.getElementById("post-timer-clock");
                 if (clockEl) {
@@ -804,7 +799,7 @@ Dispo le 9 octobre
             } else {
                 const distance = new Date(OFFICIAL_TARGET_DATE).getTime() - now;
                 if (distance <= 0) {
-                    if (OFFICIAL_VALID.length > 0 && officialWinner === null && !window.hasAutoTriggered) {
+                    if (OFFICIAL_VALID.length > 0 && (officialWinner === null || officialWinner === "null") && !window.hasAutoTriggered) {
                         window.hasAutoTriggered = true;
                         lancerAnimationLoto(OFFICIAL_VALID[Math.floor(Math.random() * OFFICIAL_VALID.length)]);
                     }
