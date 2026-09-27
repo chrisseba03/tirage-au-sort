@@ -19,7 +19,6 @@
             --accent-hover: #0ea5e9;
         }
 
-        /* Mode clair personnalisé : fond #318CE7 et corps central #79F8F8 */
         [data-theme="light"] {
             --bg-body: #318CE7;
             --bg-container: #79F8F8;
@@ -323,17 +322,6 @@
             font-size: 13px;
             border: 1px solid var(--border-color);
         }
-        .btn-delete-item {
-            display: none;
-            background: #ef4444;
-            color: white;
-            border: none;
-            padding: 2px 6px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 10px;
-            font-weight: bold;
-        }
 
         #admin-panel {
             display: none;
@@ -345,17 +333,8 @@
         }
         #admin-panel h3 { color: var(--accent-color); margin-top: 0; }
         .admin-controls { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px; }
-        input, textarea, select, button {
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            font-size: 14px;
-            font-family: inherit;
-        }
-        input, textarea, select { background: var(--item-bg); color: var(--text-main); flex: 1; width: 100%; box-sizing: border-box; }
-        button { background: var(--accent-color); color: #ffffff; font-weight: bold; cursor: pointer; border: none; transition: background 0.2s; }
+        button { padding: 10px; border-radius: 8px; border: none; font-size: 14px; font-family: inherit; font-weight: bold; cursor: pointer; transition: background 0.2s; background: var(--accent-color); color: #fff; }
         button:hover { background: var(--accent-hover); }
-        .btn-danger { background: #ef4444; color: white; }
         .btn-warning { background: #f59e0b; color: #0f172a; }
 
         .footer {
@@ -458,55 +437,9 @@
 
         <div id="admin-panel">
             <h3>🛠️ Panneau Administrateur</h3>
-            
-            <h4 style="color: var(--accent-color); margin: 0 0 8px 0;">⏳ Compte à Rebours</h4>
-            <div style="display: flex; gap: 8px; margin-bottom: 15px;">
-                <input type="datetime-local" id="cfg-countdown-date">
-                <button onclick="saveCountdownConfig()" class="btn-warning">💾 Changer la date</button>
-            </div>
-
-            <hr style="border-color: var(--border-color); margin: 15px 0;">
-
-            <h4 style="color: var(--accent-color); margin: 0 0 8px 0;">📦 Lot</h4>
-            <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px;">
-                <input type="text" id="cfg-prize-title" placeholder="Titre...">
-                <textarea id="cfg-prize-desc" rows="2" placeholder="Description..."></textarea>
-                <input type="text" id="cfg-prize-img" placeholder="URL Image...">
-                <input type="text" id="cfg-prize-url" placeholder="URL Boutique...">
-                <button onclick="savePrizeConfig()" class="btn-warning">💾 Mettre à jour le lot</button>
-            </div>
-
-            <hr style="border-color: var(--border-color); margin: 15px 0;">
-
-            <h4 style="color: var(--accent-color); margin: 0 0 8px 0;">🎵 Son de Victoire</h4>
-            <div style="margin-bottom: 15px;">
-                <select id="victorySoundSelect">
-                    <option value="fanfare">🎺 La petite fanfare festive</option>
-                    <option value="gong">🛎️ Le Gong de jeu télévisé</option>
-                </select>
-            </div>
-
-            <hr style="border-color: var(--border-color); margin: 15px 0;">
-
-            <h4 style="color: var(--accent-color); margin: 0 0 8px 0;">👥 Gestion des Participants</h4>
-            <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px;">
-                <textarea id="bulk-participants" rows="2" placeholder="Coller une liste brute..."></textarea>
-                <button onclick="addBulkParticipants()">✨ Nettoyer et Ajouter</button>
-            </div>
-            <div class="admin-controls" style="margin-bottom: 10px;">
-                <input type="text" id="new-participant" placeholder="Nom...">
-                <button onclick="addParticipant()">➕ Ajouter Validé</button>
-            </div>
+            <p style="font-size: 13px; color: var(--text-sub);">Mode admin actif (consultation des paramètres de référence).</p>
             <div class="admin-controls">
-                <input type="text" id="new-refused" placeholder="Nom refusé...">
-                <input type="text" id="reason-refused" placeholder="Raison...">
-                <button onclick="addRefused()" class="btn-warning">🚫 Ajouter Refusé</button>
-            </div>
-            
-            <div class="admin-controls" style="margin-top: 20px;">
                 <button onclick="lancerTestTirage()" class="btn-warning" style="flex: 1;">🎲 Lancer un tirage test immédiat</button>
-                <button onclick="resetTirage()" class="btn-warning">🔄 Réinitialiser le tirage</button>
-                <button onclick="resetData()" class="btn-danger">🗑️ Tout effacer</button>
             </div>
         </div>
     </div>
@@ -520,29 +453,47 @@
     </div>
 
     <script>
+        // ==========================================
+        // 🛠️ CONFIGURATION OFFICIELLE (SOURCE UNIQUE)
+        // C'est ici que tu modifies les infos pour tout le monde !
+        // ==========================================
         const ADMIN_PASSWORD = "admin170767";
-        let isAdminLoggedIn = false;
 
-        let targetDateStr = localStorage.getItem('seb_target_date') || "2026-10-04T20:00:00";
-        let prizeConfig = JSON.parse(localStorage.getItem('seb_prize')) || {
-            title: "🎁 Sachet de Caramels Artisanaux \"Les Lapalissades\"",
+        // Date et heure de fin du décompte et du tirage automatique
+        const OFFICIAL_TARGET_DATE = "2026-10-04T20:00:00";
+
+        // Informations du lot
+        const OFFICIAL_PRIZE = {
+            title: '🎁 Sachet de Caramels Artisanaux "Les Lapalissades"',
             desc: "Tentez de remporter un magnifique lot artisanal offert par notre producteur local partenaire Frédéric Pourchet.",
             img: "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=300",
             url: "https://www.facebook.com/groups/bouce/"
         };
-        let participantsValid = JSON.parse(localStorage.getItem('seb_participants')) || [
-            "Élodie Martin", "Thomas Bernard", "Julie Dupont", "Marc Leroy", "Sophie Petit", "Alexandre Moreau", "Nathalie Faure", "Christophe Leroy"
+
+        // Liste officielle des participants validés
+        const OFFICIAL_VALID = [
+            "Élodie Martin", 
+            "Thomas Bernard", 
+            "Julie Dupont", 
+            "Marc Leroy", 
+            "Sophie Petit", 
+            "Alexandre Moreau", 
+            "Nathalie Faure", 
+            "Christophe Leroy"
         ];
-        let participantsRefused = JSON.parse(localStorage.getItem('seb_refused')) || [
+
+        // Liste officielle des inscriptions refusées
+        const OFFICIAL_REFUSED = [
             { nom: "Jean Durand", raison: "Hors critères géographiques" }
         ];
 
-        let officialWinner = localStorage.getItem('seb_winner') || null;
-        let winnerTimestamp = localStorage.getItem('seb_winner_time') ? parseInt(localStorage.getItem('seb_winner_time')) : null;
-        if (officialWinner && !winnerTimestamp) {
-            winnerTimestamp = new Date().getTime();
-            localStorage.setItem('seb_winner_time', winnerTimestamp);
-        }
+        // Gagnant officiel (laisser à null tant que le tirage n'est pas fait ou figé)
+        // Exemple si figé : let officialWinner = "Julie Dupont";
+        let officialWinner = null;
+        let winnerTimestamp = null;
+        // ==========================================
+
+        let isAdminLoggedIn = false;
 
         function initTheme() {
             const savedTheme = localStorage.getItem('seb_theme') || 'dark';
@@ -571,46 +522,10 @@
             if (mdp === ADMIN_PASSWORD) {
                 isAdminLoggedIn = true;
                 document.getElementById("admin-panel").style.display = "block";
-                chargerInterface();
                 alert("🔓 Mode administrateur activé !");
             } else if (mdp !== null) {
                 alert("❌ Mot de passe incorrect !");
             }
-        }
-
-        function playDrumRollSound() {
-            try {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                for (let i = 0; i < 35; i++) {
-                    let osc = audioCtx.createOscillator();
-                    let gain = audioCtx.createGain();
-                    osc.type = 'sawtooth';
-                    osc.frequency.setValueAtTime(80 + Math.random() * 25, audioCtx.currentTime + i * 0.12);
-                    gain.gain.setValueAtTime(0.12, audioCtx.currentTime + i * 0.12);
-                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + i * 0.12 + 0.08);
-                    osc.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    osc.start(audioCtx.currentTime + i * 0.12);
-                    osc.stop(audioCtx.currentTime + i * 0.12 + 0.08);
-                }
-            } catch(e) {}
-        }
-
-        function playGongSound() {
-            try {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                let osc = audioCtx.createOscillator();
-                let gain = audioCtx.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(110, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(45, audioCtx.currentTime + 1.5);
-                gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.5);
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start();
-                osc.stop(audioCtx.currentTime + 1.5);
-            } catch(e) {}
         }
 
         function playFanfareSound() {
@@ -692,50 +607,29 @@
             });
         }
 
-        function saveData() {
-            localStorage.setItem('seb_participants', JSON.stringify(participantsValid));
-            localStorage.setItem('seb_refused', JSON.stringify(participantsRefused));
-            localStorage.setItem('seb_prize', JSON.stringify(prizeConfig));
-            localStorage.setItem('seb_target_date', targetDateStr);
-            if (officialWinner) {
-                localStorage.setItem('seb_winner', officialWinner);
-                localStorage.setItem('seb_winner_time', winnerTimestamp);
-            } else {
-                localStorage.removeItem('seb_winner');
-                localStorage.removeItem('seb_winner_time');
-            }
-            chargerInterface();
-        }
-
         function chargerInterface() {
-            document.getElementById("target-date-str").innerText = new Date(targetDateStr).toLocaleString('fr-FR', { dateStyle: 'full', timeStyle: 'short' });
-            document.getElementById("cfg-countdown-date").value = targetDateStr;
+            document.getElementById("target-date-str").innerText = new Date(OFFICIAL_TARGET_DATE).toLocaleString('fr-FR', { dateStyle: 'full', timeStyle: 'short' });
 
-            document.getElementById("prize-title-display").innerText = prizeConfig.title;
-            document.getElementById("prize-desc-display").innerText = prizeConfig.desc;
-            document.getElementById("prize-img-display").src = prizeConfig.img;
-            document.getElementById("prize-link-display").href = prizeConfig.url;
+            document.getElementById("prize-title-display").innerText = OFFICIAL_PRIZE.title;
+            document.getElementById("prize-desc-display").innerText = OFFICIAL_PRIZE.desc;
+            document.getElementById("prize-img-display").src = OFFICIAL_PRIZE.img;
+            document.getElementById("prize-link-display").href = OFFICIAL_PRIZE.url;
 
-            document.getElementById("cfg-prize-title").value = prizeConfig.title;
-            document.getElementById("cfg-prize-desc").value = prizeConfig.desc;
-            document.getElementById("cfg-prize-img").value = prizeConfig.img;
-            document.getElementById("cfg-prize-url").value = prizeConfig.url;
-
-            document.getElementById("count-valid").innerText = `✅ Participants Validés (${participantsValid.length})`;
+            document.getElementById("count-valid").innerText = `✅ Participants Validés (${OFFICIAL_VALID.length})`;
             const ulValid = document.getElementById("list-valid");
             ulValid.innerHTML = "";
-            participantsValid.sort().forEach((p, index) => {
+            [...OFFICIAL_VALID].sort().forEach(p => {
                 const li = document.createElement("li");
-                li.innerHTML = `<span>${p}</span> ${isAdminLoggedIn ? `<button class="btn-delete-item" style="display:inline-block;" onclick="removeValid(${index})">❌</button>` : ''}`;
+                li.innerHTML = `<span>${p}</span>`;
                 ulValid.appendChild(li);
             });
 
-            document.getElementById("count-refused").innerText = `❌ Inscriptions Refusées (${participantsRefused.length})`;
+            document.getElementById("count-refused").innerText = `❌ Inscriptions Refusées (${OFFICIAL_REFUSED.length})`;
             const ulRefused = document.getElementById("list-refused");
             ulRefused.innerHTML = "";
-            participantsRefused.forEach((r, index) => {
+            OFFICIAL_REFUSED.forEach(r => {
                 const li = document.createElement("li");
-                li.innerHTML = `<span><strong>${r.nom}</strong> <em style="color:var(--text-sub)">(${r.raison})</em></span> ${isAdminLoggedIn ? `<button class="btn-delete-item" style="display:inline-block;" onclick="removeRefused(${index})">❌</button>` : ''}`;
+                li.innerHTML = `<span><strong>${r.nom}</strong> <em style="color:var(--text-sub)">(${r.raison})</em></span>`;
                 ulRefused.appendChild(li);
             });
 
@@ -749,51 +643,6 @@
             }
         }
 
-        function saveCountdownConfig() {
-            const newDate = document.getElementById("cfg-countdown-date").value;
-            if (newDate) { targetDateStr = newDate; saveData(); alert("⏳ Date mise à jour !"); location.reload(); }
-        }
-
-        function savePrizeConfig() {
-            prizeConfig.title = document.getElementById("cfg-prize-title").value;
-            prizeConfig.desc = document.getElementById("cfg-prize-desc").value;
-            prizeConfig.img = document.getElementById("cfg-prize-img").value;
-            prizeConfig.url = document.getElementById("cfg-prize-url").value;
-            saveData();
-            alert("💾 Lot mis à jour !");
-        }
-
-        function addBulkParticipants() {
-            const text = document.getElementById("bulk-participants").value;
-            if (!text.trim()) return;
-            let addedCount = 0;
-            text.split('\n').forEach(line => {
-                let cleaned = line.replace(/^[\d\-\*\•\.\)]+\s*/, '').trim();
-                if (cleaned.length > 2 && !participantsValid.includes(cleaned)) {
-                    participantsValid.push(cleaned);
-                    addedCount++;
-                }
-            });
-            document.getElementById("bulk-participants").value = "";
-            saveData();
-            alert(`✨ ${addedCount} participant(s) ajouté(s) !`);
-        }
-
-        function addParticipant() {
-            const input = document.getElementById("new-participant");
-            if (input.value.trim() !== "") { participantsValid.push(input.value.trim()); input.value = ""; saveData(); }
-        }
-
-        function removeValid(index) { if (isAdminLoggedIn) { participantsValid.splice(index, 1); saveData(); } }
-
-        function addRefused() {
-            const n = document.getElementById("new-refused").value.trim();
-            const r = document.getElementById("reason-refused").value.trim() || "Non spécifié";
-            if (n !== "") { participantsRefused.push({ nom: n, raison: r }); document.getElementById("new-refused").value = ""; document.getElementById("reason-refused").value = ""; saveData(); }
-        }
-
-        function removeRefused(index) { if (isAdminLoggedIn) { participantsRefused.splice(index, 1); saveData(); } }
-
         function showWinnerUI(winner) {
             document.getElementById("countdown-container").style.display = "none";
             document.getElementById("countdown-text").style.display = "none";
@@ -806,8 +655,6 @@
         function lancerAnimationLoto(winnerName) {
             officialWinner = winnerName;
             winnerTimestamp = new Date().getTime();
-            localStorage.setItem('seb_winner', officialWinner);
-            localStorage.setItem('seb_winner_time', winnerTimestamp);
 
             document.getElementById("countdown-container").style.display = "none";
             document.getElementById("countdown-text").style.display = "none";
@@ -820,15 +667,13 @@
             machine.innerHTML = "";
             document.getElementById("loto-title-status").innerText = "🎰 Le tirage est en cours en direct !";
 
-            if (participantsValid.length === 0) {
+            if (OFFICIAL_VALID.length === 0) {
                 machine.innerHTML = "<h3 style='color:white; margin-top:100px;'>🚨 Aucun participant enregistré !</h3>";
                 return;
             }
 
-            playDrumRollSound();
-
             const ballColors = ['#fbbf24', '#38bdf8', '#34d399', '#f472b6', '#a78bfa', '#fb7185'];
-            let listToDisplay = [...participantsValid];
+            let listToDisplay = [...OFFICIAL_VALID];
             if (!listToDisplay.includes(winnerName)) listToDisplay.push(winnerName);
             listToDisplay.sort(() => Math.random() - 0.5);
             if (listToDisplay.length > 30) listToDisplay = listToDisplay.slice(0, 30);
@@ -896,12 +741,7 @@
                         winnerBall.style.boxShadow = "0 0 90px #34d399, 0 0 150px #fbbf24, inset -8px -8px 20px rgba(0,0,0,0.5)";
                     }
 
-                    if (document.getElementById('victorySoundSelect').value === 'gong') {
-                        playGongSound();
-                    } else {
-                        playFanfareSound();
-                    }
-
+                    playFanfareSound();
                     launchBalloons();
 
                     setTimeout(() => {
@@ -914,27 +754,8 @@
         }
 
         function lancerTestTirage() {
-            if (participantsValid.length === 0) { alert("Ajoute des participants !"); return; }
-            lancerAnimationLoto(participantsValid[Math.floor(Math.random() * participantsValid.length)]);
-        }
-
-        function resetTirage() {
-            officialWinner = null;
-            winnerTimestamp = null;
-            localStorage.removeItem('seb_winner');
-            localStorage.removeItem('seb_winner_time');
-            
-            document.getElementById("loto-display").style.display = "none";
-            document.getElementById("winner-box").style.display = "none";
-            document.getElementById("countdown-container").style.display = "flex";
-            document.getElementById("countdown-text").style.display = "block";
-            
-            chargerInterface();
-            alert("🔄 Tirage réinitialisé avec succès !");
-        }
-
-        function resetData() {
-            if (confirm("Tout effacer ?")) { localStorage.clear(); location.reload(); }
+            if (OFFICIAL_VALID.length === 0) { alert("Ajoute des participants !"); return; }
+            lancerAnimationLoto(OFFICIAL_VALID[Math.floor(Math.random() * OFFICIAL_VALID.length)]);
         }
 
         chargerInterface();
@@ -948,11 +769,11 @@
                     clockEl.innerText = `${Math.floor(elapsed / (1000 * 60 * 60 * 24))}j ${Math.floor((elapsed % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))}h ${Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60))}m ${Math.floor((elapsed % (1000 * 60)) / 1000)}s`;
                 }
             } else {
-                const distance = new Date(targetDateStr).getTime() - now;
+                const distance = new Date(OFFICIAL_TARGET_DATE).getTime() - now;
                 if (distance <= 0) {
-                    if (participantsValid.length > 0 && officialWinner === null && !window.hasAutoTriggered) {
+                    if (OFFICIAL_VALID.length > 0 && officialWinner === null && !window.hasAutoTriggered) {
                         window.hasAutoTriggered = true;
-                        lancerAnimationLoto(participantsValid[Math.floor(Math.random() * participantsValid.length)]);
+                        lancerAnimationLoto(OFFICIAL_VALID[Math.floor(Math.random() * OFFICIAL_VALID.length)]);
                     }
                 } else {
                     document.getElementById("days").innerText = Math.floor(distance / (1000 * 60 * 60 * 24));
