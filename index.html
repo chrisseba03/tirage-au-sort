@@ -474,7 +474,7 @@
         // ==========================================
         // 🛠️ CONFIGURATION OFFICIELLE (SOURCE UNIQUE)
         // ==========================================
-        const ADMIN_PASSWORD = "admin170767";
+        const ADMIN_PASSWORD = "a";
 
         let OFFICIAL_TARGET_DATE = localStorage.getItem('seb_custom_target_date') || "2026-10-04T20:00:00";
         const FORCED_OFFICIAL_WINNER = "";
@@ -863,7 +863,7 @@ Dispo le 9 octobre
                 const distance = new Date(OFFICIAL_TARGET_DATE).getTime() - now;
                 if (distance <= 0) {
                     if (OFFICIAL_VALID.length > 0 && (officialWinner === null || officialWinner === "null") && !window.hasAutoTriggered) {
-                        window.hasAutoTriggerged = true;
+                        window.hasAutoTriggered = true;
                         let finalWinner = FORCED_OFFICIAL_WINNER !== "" ? FORCED_OFFICIAL_WINNER : OFFICIAL_VALID[Math.floor(Math.random() * OFFICIAL_VALID.length)];
                         lancerAnimationLoto(finalWinner);
                     }
