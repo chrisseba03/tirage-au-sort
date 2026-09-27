@@ -226,12 +226,12 @@
             </div>
         </div>
 
-        <!-- Compte à rebours -->
+        <!-- Compte à rebours / Temps écoulé -->
         <div id="countdown-container" class="countdown-container">
-            <div class="time-box"><span id="days" class="time-value">0</span><span class="time-label">Jours</span></div>
-            <div class="time-box"><span id="hours" class="time-value">0</span><span class="time-label">Heures</span></div>
-            <div class="time-box"><span id="minutes" class="time-value">0</span><span class="time-label">Min</span></div>
-            <div class="time-box"><span id="seconds" class="time-value">0</span><span class="time-label">Sec</span></div>
+            <div class="time-box"><span id="days" class="time-value">0</span><span id="label-days" class="time-label">Jours</span></div>
+            <div class="time-box"><span id="hours" class="time-value">0</span><span id="label-hours" class="time-label">Heures</span></div>
+            <div class="time-box"><span id="minutes" class="time-value">0</span><span id="label-min" class="time-label">Min</span></div>
+            <div class="time-box"><span id="seconds" class="time-value">0</span><span id="label-sec" class="time-label">Sec</span></div>
         </div>
         <div id="countdown-text" style="text-align: center; color: var(--text-sub); font-size: 14px; margin-bottom: 20px;">
             Ouverture du tirage le : <span id="target-date-str"></span>
@@ -240,7 +240,9 @@
         <!-- Machine à boules -->
         <div id="loto-display">
             <h2 id="loto-title-status" style="margin: 0 0 5px 0; font-size: 20px; color: var(--accent-color);">🎰 Le tirage est en cours en direct !</h2>
-            <div class="loto-machine" id="loto-machine"></div>
+            <div class="loto-machine" id="loto-machine">
+                <!-- Les ballons animés réapparaissent ici pendant le tirage -->
+            </div>
         </div>
 
         <!-- Résultat gagnant -->
@@ -267,7 +269,7 @@
 
     <script>
         // =========================================================================
-        // 🎯 HEURE DE TEST FIXÉE AUJOURD'HUI À 10H04
+        // 🎯 HEURE DE TEST (modifiez ici pour vos futurs tirages)
         // =========================================================================
         const OFFICIAL_TARGET_DATE = "2026-09-27T10:04:00"; 
         // =========================================================================
@@ -379,6 +381,20 @@ Chaque boite porte son kilomètre de la N7 : 0 = Paris, 996 = Menton.
             });
         }
 
+        // Affichage direct sans animation si on arrive après coup
+        function afficherGagnantDirect(winnerName) {
+            document.getElementById("countdown-container").style.display = "none";
+            document.getElementById("countdown-text").style.display = "none";
+            document.getElementById("loto-display").style.display = "none";
+            
+            const wBox = document.getElementById("winner-box");
+            wBox.style.display = "block";
+            document.getElementById("winner-name").innerText = winnerName;
+            
+            // Petits confettis festifs d'accueil direct
+            confetti({ particleCount: 50, spread: 70, origin: { y: 0.6 } });
+        }
+
         function lancerAnimationLoto(winnerName) {
             document.getElementById("countdown-container").style.display = "none";
             document.getElementById("countdown-text").style.display = "none";
@@ -463,20 +479,41 @@ Chaque boite porte son kilomètre de la N7 : 0 = Paris, 996 = Menton.
 
         chargerInterface();
 
+        const nowInitial = new Date().getTime();
+        const targetTimeInitial = new Date(OFFICIAL_TARGET_DATE).getTime();
+        const finalWinner = getSyncedWinner(OFFICIAL_VALID, OFFICIAL_TARGET_DATE);
+
+        // Si on arrive DIRECTEMENT après l'heure du tirage : affichage figé direct
+        if (nowInitial >= targetTimeInitial) {
+            afficherGagnantDirect(finalWinner);
+        }
+
         let tirageLance = false;
 
         setInterval(function() {
-            if (tirageLance) return;
-
             const now = new Date().getTime();
             const targetTime = new Date(OFFICIAL_TARGET_DATE).getTime();
             const distance = targetTime - now;
 
             if (distance <= 0) {
-                tirageLance = true;
-                const finalWinner = getSyncedWinner(OFFICIAL_VALID, OFFICIAL_TARGET_DATE);
-                lancerAnimationLoto(finalWinner);
+                // Si l'heure est atteinte pile pendant qu'on est sur la page
+                if (!tirageLance && document.getElementById("winner-box").style.display !== "block" && document.getElementById("loto-display").style.display !== "block") {
+                    tirageLance = true;
+                    lancerAnimationLoto(finalWinner);
+                } else if (tirageLance || document.getElementById("winner-box").style.display === "block") {
+                    // Mode affichage du temps écoulé après le tirage
+                    const elapsed = now - targetTime;
+                    document.getElementById("days").innerText = Math.floor(elapsed / (1000 * 60 * 60 * 24));
+                    document.getElementById("hours").innerText = Math.floor((elapsed % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    document.getElementById("minutes").innerText = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
+                    document.getElementById("seconds").innerText = Math.floor((elapsed % (1000 * 60)) / 1000);
+                    
+                    document.getElementById("countdown-text").innerHTML = "Le tirage a eu lieu il y a :";
+                    document.getElementById("countdown-text").style.display = "block";
+                    document.getElementById("countdown-container").style.display = "flex";
+                }
             } else {
+                // Compte à rebours avant le tirage
                 document.getElementById("days").innerText = Math.floor(distance / (1000 * 60 * 60 * 24));
                 document.getElementById("hours").innerText = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 document.getElementById("minutes").innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
