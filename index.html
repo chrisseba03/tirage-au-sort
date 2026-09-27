@@ -145,6 +145,7 @@
             font-size: 14px;
             line-height: 1.5;
             margin-bottom: 12px;
+            white-space: pre-line;
         }
         .btn-shop {
             display: inline-block;
@@ -437,7 +438,7 @@
 
         <div id="admin-panel">
             <h3>🛠️ Panneau Administrateur</h3>
-            <p style="font-size: 13px; color: var(--text-sub);">Mode admin actif (consultation des paramètres de référence).</p>
+            <p style="font-size: 13px; color: var(--text-sub);">📊 Visites de la page (enregistrées sur cet appareil) : <strong id="visit-count" style="color:var(--accent-color);">0</strong></p>
             <div class="admin-controls">
                 <button onclick="lancerTestTirage()" class="btn-warning" style="flex: 1;">🎲 Lancer un tirage test immédiat</button>
             </div>
@@ -455,19 +456,22 @@
     <script>
         // ==========================================
         // 🛠️ CONFIGURATION OFFICIELLE (SOURCE UNIQUE)
-        // C'est ici que tu modifies les infos pour tout le monde !
         // ==========================================
         const ADMIN_PASSWORD = "admin170767";
 
-        // Date et heure de fin du décompte et du tirage automatique
+        // Date et heure de fin : Dimanche 4 Octobre 2026 à 20:00
         const OFFICIAL_TARGET_DATE = "2026-10-04T20:00:00";
 
-        // Informations du lot (Boîte collector N°996 - Les Lapalissades)
+        // Informations exactes du lot
         const OFFICIAL_PRIZE = {
-            title: '🎁 Sachet de Caramels Artisanaux "Les Lapalissades"',
-            desc: "Tentez de remporter LA pièce de collection ultime... 🏆 La fameuse boîte collector numérotée N°996 ! La toute dernière borne, le symbole de l'arrivée mythique à Menton et des vacances au soleil sur la Nationale 7. 🚗 🍊",
-            img: "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=300",
-            url: "https://www.facebook.com/groups/bouce/"
+            title: "🎁 Boîte collector numérotée N°996",
+            desc: `Tentez de remporter le coffret 996 "Route Bleue 2026"
+Chaque boite porte son kilomètre de la N7 : 0 = Paris, 996 = Menton.
+996 numéros, pas un de plus !
+Dispo le 9 octobre 
+🚗 Embouteillage de Lapalisse les 10 et 11 Octobre 2026`,
+            img: "https://i.ibb.co/6R2191k/lot.jpg", // Image mise à jour direct lien hébergé
+            url: "https://lesdouceursdelapalisse.fr/"
         };
 
         // Liste officielle des 28 participants validés
@@ -478,18 +482,24 @@
             "Brigitte Cleret Blettery",
             "Chantal Dajoux",
             "Chloe Dillenseger",
+            "Christelle Sauvestre",
+            "Christophe Brasseur",
             "Claudette Piotte",
             "Dominique Auzance",
             "Francine Poulet",
             "Joëlle Mouflard-Lenormand",
             "Kathy Sauvestre",
             "La Meute Joyeuse",
+            "Lea Jnksz",
+            "Lila José",
             "Lita Sylvain Audebert",
             "Martine Pellevent-Boudonnat",
             "Michel Poulet",
             "Nina Mes",
             "Patrice Anne-marie Noel",
-            "Peggy Zanneletahc",
+            "Peggy Zanelletahc",
+            "Sandra Jaubart",
+            "Stephanie Renon",
             "Sue Lombrelle",
             "Veronique Avital Sebag",
             "Yolande Virlogeux",
@@ -498,15 +508,25 @@
 
         // Liste officielle des inscriptions refusées
         const OFFICIAL_REFUSED = [
-            { nom: "Jean Durand", raison: "Hors critères géographiques" }
+            { nom: "Seb Capturis", raison: "Admin" },
+            { nom: "Frederic Pourchet", raison: "Organisateur" }
         ];
 
-        // Gagnant officiel (laisser à null tant que le tirage n'est pas fait ou figé)
         let officialWinner = null;
         let winnerTimestamp = null;
         // ==========================================
 
         let isAdminLoggedIn = false;
+
+        // Compteur de visites discret en admin
+        function trackerVisites() {
+            let visites = localStorage.getItem('seb_visites_count') || 0;
+            visites = parseInt(visites) + 1;
+            localStorage.setItem('seb_visites_count', visites);
+            const visitEl = document.getElementById("visit-count");
+            if (visitEl) visitEl.innerText = visites;
+        }
+        trackerVisites();
 
         function initTheme() {
             const savedTheme = localStorage.getItem('seb_theme') || 'dark';
