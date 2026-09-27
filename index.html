@@ -327,7 +327,7 @@
 
     <script>
         // =========================================================================
-        // 🎯 HEURE DU TIRAGE PROGRAMMÉE À 15H00
+        // 🎯 HEURE DU TIRAGE PROGRAMMÉE À 15H00 (ou test direct)
         // =========================================================================
         const ADMIN_PASSWORD = "a";
         let OFFICIAL_TARGET_DATE = localStorage.getItem('seb_custom_target_date') || "2026-09-27T15:00:00"; 
@@ -482,12 +482,9 @@ Chaque boite porte son kilomètre de la N7 : 0 = Paris, 996 = Menton.
         }
 
         function lancerAnimationLoto(winnerName) {
-            document.getElementById("countdown-container").style.display = "none";
-            document.getElementById("countdown-text").style.display = "none";
+            document.getElementById("countdown-container").style.display = "flex"; // On garde visible pour le temps écoulé après
+            document.getElementById("loto-display").style.display = "block";
             document.getElementById("winner-box").style.display = "none";
-            
-            const lotoDisplay = document.getElementById("loto-display");
-            lotoDisplay.style.display = "block";
 
             const machine = document.getElementById("loto-machine");
             machine.innerHTML = "";
@@ -575,6 +572,7 @@ Chaque boite porte son kilomètre de la N7 : 0 = Paris, 996 = Menton.
 
         let tirageLance = false;
 
+        // Boucle universelle synchronisée (gère le compte à rebours ET le temps écoulé en direct)
         setInterval(function() {
             const now = new Date().getTime();
             const targetTime = new Date(OFFICIAL_TARGET_DATE).getTime();
@@ -584,20 +582,23 @@ Chaque boite porte son kilomètre de la N7 : 0 = Paris, 996 = Menton.
                 if (!tirageLance && document.getElementById("winner-box").style.display !== "block" && document.getElementById("loto-display").style.display !== "block") {
                     tirageLance = true;
                     lancerAnimationLoto(finalWinner);
-                } else if (tirageLance || document.getElementById("winner-box").style.display === "block") {
-                    const elapsed = now - targetTime;
-                    document.getElementById("days").innerText = Math.floor(elapsed / (1000 * 60 * 60 * 24));
-                    document.getElementById("hours").innerText = Math.floor((elapsed % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    document.getElementById("minutes").innerText = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
-                    document.getElementById("seconds").innerText = Math.floor((elapsed % (1000 * 60)) / 1000);
-                    
-                    document.getElementById("countdown-text").innerHTML = "Le tirage a eu lieu il y a :";
                 }
+                
+                // Calcul permanent du temps écoulé (fonctionne tout de suite sans réactualiser)
+                const elapsed = now - targetTime;
+                document.getElementById("days").innerText = Math.floor(elapsed / (1000 * 60 * 60 * 24));
+                document.getElementById("hours").innerText = Math.floor((elapsed % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                document.getElementById("minutes").innerText = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
+                document.getElementById("seconds").innerText = Math.floor((elapsed % (1000 * 60)) / 1000);
+                
+                document.getElementById("countdown-text").innerHTML = "Le tirage a eu lieu il y a :";
             } else {
                 document.getElementById("days").innerText = Math.floor(distance / (1000 * 60 * 60 * 24));
                 document.getElementById("hours").innerText = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 document.getElementById("minutes").innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
                 document.getElementById("seconds").innerText = Math.floor((distance % (1000 * 60)) / 1000);
+                
+                document.getElementById("countdown-text").innerHTML = 'Ouverture du tirage le : <span id="target-date-str">' + new Date(OFFICIAL_TARGET_DATE).toLocaleString('fr-FR', { dateStyle: 'full', timeStyle: 'short' }) + '</span>';
             }
         }, 1000);
     </script>
