@@ -476,10 +476,7 @@
         // ==========================================
         const ADMIN_PASSWORD = "admin170767";
 
-        // Date par défaut (Dimanche 4 Octobre 2026 à 20:00) ou récupérée depuis le localStorage admin
         let OFFICIAL_TARGET_DATE = localStorage.getItem('seb_custom_target_date') || "2026-10-04T20:00:00";
-
-        // Optionnel : Si vous voulez forcer un nom de gagnant spécifique à l'avance
         const FORCED_OFFICIAL_WINNER = "";
 
         const OFFICIAL_PRIZE = {
@@ -550,7 +547,6 @@ Dispo le 9 octobre
             const mdp = prompt("Mot de passe administrateur :");
             if (mdp === ADMIN_PASSWORD) {
                 document.getElementById("admin-panel").style.display = "block";
-                // Remplir le champ input date avec la valeur actuelle au format datetime-local
                 document.getElementById("admin-target-input").value = OFFICIAL_TARGET_DATE;
                 alert("🔓 Mode administrateur activé !");
             } else if (mdp !== null) {
@@ -570,7 +566,8 @@ Dispo le 9 octobre
             }
         }
 
-        function playDrumrollAndFanfare() {
+        // 🥁 Roulement de tambour initial (durée environ 3.8 secondes pour coller à l'animation)
+        function playDrumroll() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 let drumCount = 0;
@@ -578,7 +575,7 @@ Dispo le 9 octobre
                     let osc = audioCtx.createOscillator();
                     let gain = audioCtx.createGain();
                     osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(100 + Math.random() * 30, audioCtx.currentTime);
+                    osc.frequency.setValueAtTime(90 + Math.random() * 35, audioCtx.currentTime);
                     gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
                     gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
                     osc.connect(gain);
@@ -587,30 +584,35 @@ Dispo le 9 octobre
                     osc.stop(audioCtx.currentTime + 0.1);
                     
                     drumCount++;
-                    if (drumCount > 18) {
+                    if (drumCount > 35) {
                         clearInterval(drumInterval);
-                        setTimeout(() => {
-                            const notes = [
-                                {f: 392.00, t: 0.0, d: 0.15},
-                                {f: 523.25, t: 0.15, d: 0.15},
-                                {f: 659.25, t: 0.3, d: 0.15},
-                                {f: 783.99, t: 0.45, d: 0.6}
-                            ];
-                            notes.forEach(note => {
-                                let osc2 = audioCtx.createOscillator();
-                                let gain2 = audioCtx.createGain();
-                                osc2.type = 'square';
-                                osc2.frequency.value = note.f;
-                                gain2.gain.setValueAtTime(0.12, audioCtx.currentTime + note.t);
-                                gain2.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + note.t + note.d);
-                                osc2.connect(gain2);
-                                gain2.connect(audioCtx.destination);
-                                osc2.start(audioCtx.currentTime + note.t);
-                                osc2.stop(audioCtx.currentTime + note.t + note.d);
-                            });
-                        }, 200);
                     }
                 }, 100);
+            } catch(e) {}
+        }
+
+        // 🎺 Fanfare finale au moment où la boule s'arrête au centre
+        function playFanfare() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const notes = [
+                    {f: 392.00, t: 0.0, d: 0.15},
+                    {f: 523.25, t: 0.15, d: 0.15},
+                    {f: 659.25, t: 0.3, d: 0.15},
+                    {f: 783.99, t: 0.45, d: 0.7}
+                ];
+                notes.forEach(note => {
+                    let osc = audioCtx.createOscillator();
+                    let gain = audioCtx.createGain();
+                    osc.type = 'square';
+                    osc.frequency.value = note.f;
+                    gain.gain.setValueAtTime(0.15, audioCtx.currentTime + note.t);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + note.t + note.d);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(audioCtx.currentTime + note.t);
+                    osc.stop(audioCtx.currentTime + note.t + note.d);
+                });
             } catch(e) {}
         }
 
@@ -736,6 +738,9 @@ Dispo le 9 octobre
                 return;
             }
 
+            // 🥁 DÉMARRAGE DU TAMBOUR ICI (Dès le lancement du brassage des boules)
+            playDrumroll();
+
             const ballColors = ['#fbbf24', '#38bdf8', '#34d399', '#f472b6', '#a78bfa', '#fb7185'];
             let listToDisplay = [...OFFICIAL_VALID];
             if (!listToDisplay.includes(winnerName)) listToDisplay.push(winnerName);
@@ -778,6 +783,10 @@ Dispo le 9 octobre
                 } else {
                     document.getElementById("loto-title-status").innerText = "🏆 Boule Gagnante !";
 
+                    // 🎺 DÉMARRAGE DE LA FANFARE ICI (Quand la boule est désignée et s'arrête au centre)
+                    playFanfare();
+                    launchBalloons();
+
                     let winningBallObj = ballsData.find(b => b.name === winnerName);
                     if (!winningBallObj && ballsData.length > 0) winningBallObj = ballsData[0];
 
@@ -804,9 +813,6 @@ Dispo le 9 octobre
                         winnerBall.style.padding = "10px";
                         winnerBall.style.boxShadow = "0 0 90px #34d399, 0 0 150px #fbbf24, inset -8px -8px 20px rgba(0,0,0,0.5)";
                     }
-
-                    playDrumrollAndFanfare();
-                    launchBalloons();
 
                     setTimeout(() => {
                         showWinnerUI(officialWinner);
@@ -857,9 +863,8 @@ Dispo le 9 octobre
                 const distance = new Date(OFFICIAL_TARGET_DATE).getTime() - now;
                 if (distance <= 0) {
                     if (OFFICIAL_VALID.length > 0 && (officialWinner === null || officialWinner === "null") && !window.hasAutoTriggered) {
-                        window.hasAutoTriggered = true;
+                        window.hasAutoTriggerged = true;
                         let finalWinner = FORCED_OFFICIAL_WINNER !== "" ? FORCED_OFFICIAL_WINNER : OFFICIAL_VALID[Math.floor(Math.random() * OFFICIAL_VALID.length)];
-                        lancerAnimationLotonew = finalWinner;
                         lancerAnimationLoto(finalWinner);
                     }
                 } else {
