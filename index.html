@@ -5,7 +5,7 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎲</text></svg>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Le Grand Tirage au Sort - La Place du Village (03)</title>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/canvas-confetti.min.js"></script>
     <style>
         :root {
             --bg-body: #0f172a;
@@ -98,7 +98,6 @@
         .prize-desc { color: var(--text-sub); font-size: 14px; line-height: 1.5; margin-bottom: 12px; white-space: pre-line; }
         .btn-shop { display: inline-block; background: var(--accent-color); color: #ffffff; padding: 8px 14px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 13px; }
 
-        /* Style de la bannière d'appel à l'action pour participer */
         .participate-banner {
             background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), rgba(14, 165, 233, 0.25));
             border: 2px dashed var(--accent-color);
@@ -299,7 +298,6 @@
             </div>
         </div>
 
-        <!-- Bannière stratégique pour participer -->
         <div class="participate-banner">
             <div class="participate-text">🎯 Vous souhaitez participer et tenter votre chance pour ce tirage ?</div>
             <a href="https://www.facebook.com/groups/bouce/permalink/2566991197077728/" target="_blank" class="btn-participate">
@@ -676,7 +674,7 @@ Chaque boite porte son kilomètre de la N7 : 0 = Paris, 996 = Menton.
                 document.getElementById("days").innerText = Math.floor(distance / (1000 * 60 * 60 * 24));
                 document.getElementById("hours").innerText = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 document.getElementById("minutes").innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                document.getElementById("seconds").innerText.innerHTML = Math.floor((distance % (1000 * 60)) / 1000);
+                document.getElementById("seconds").innerText = Math.floor((distance % (1000 * 60)) / 1000); // <- Corrigé ici !
                 
                 document.getElementById("countdown-text").innerHTML = 'Ouverture du tirage le : <span id="target-date-str">' + new Date(OFFICIAL_TARGET_DATE).toLocaleString('fr-FR', { dateStyle: 'full', timeStyle: 'short' }) + '</span>';
             }
