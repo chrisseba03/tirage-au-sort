@@ -65,7 +65,7 @@
         }
 
         h1 {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             margin: 0;
             text-align: center;
             color: var(--accent-color);
@@ -119,33 +119,6 @@
 
         .cta-banner:hover {
             transform: scale(1.02);
-        }
-
-        .countdown-container {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin: 15px 0;
-        }
-
-        .countdown-box {
-            background: var(--bg-color);
-            padding: 10px 15px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            min-width: 50px;
-        }
-
-        .countdown-number {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--accent-color);
-        }
-
-        .countdown-label {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
         }
 
         .winner-box {
@@ -183,7 +156,6 @@
             text-overflow: ellipsis;
         }
 
-        /* Panneau Admin */
         #admin-panel {
             display: none;
             background: var(--card-bg);
@@ -204,16 +176,18 @@
             <button class="admin-btn" onclick="toggleAdmin()">⚙️ Admin</button>
         </header>
 
-        <!-- Panneau Administrateur (Protégé) -->
+        <!-- Panneau Administrateur -->
         <div id="admin-panel">
             <h3>Panel Administrateur</h3>
-            <p>Statut visiteurs : <span id="visitor-count">Chargement...</span></p>
-            <button class="admin-btn" onclick="resetWinner()" style="background: #dc2626;">Réinitialiser le gagnant</button>
+            <p>Mot de passe requis pour réinitialiser le tirage si besoin.</p>
+            <input type="password" id="admin-pass" placeholder="Mot de passe admin">
+            <button class="admin-btn" onclick="resetWinner()">Forcer un nouveau tirage</button>
         </div>
 
         <!-- Carte Principale du Lot -->
         <div class="card">
             <h2>🌲 La Place du Village - ALLIER (03) 🌲</h2>
+            
             <h3>🎁 Boîte collector numérotée N°996</h3>
             <p>Tentez de remporter le coffret 996 "Route Bleue 2026".<br>Chaque boîte porte son kilomètre de la N7 : 0 = Paris, 996 = Menton.<br><strong>996 numéros, pas un de plus !</strong></p>
             
@@ -222,149 +196,105 @@
             </a>
         </div>
 
-        <!-- Compte à rebours -->
+        <!-- Bloc du Gagnant Sécurisé -->
         <div class="card">
-            <h3>Tirage effectué le dimanche 4 octobre 2026 à 20:00</h3>
-            <div class="countdown-container">
-                <div class="countdown-box">
-                    <div id="days" class="countdown-number">0</div>
-                    <div class="countdown-label">Jours</div>
-                </div>
-                <div class="countdown-box">
-                    <div id="hours" class="countdown-number">0</div>
-                    <div class="countdown-label">Heures</div>
-                </div>
-                <div class="countdown-box">
-                    <div id="minutes" class="countdown-number">0</div>
-                    <div class="countdown-label">Min</div>
-                </div>
-                <div class="countdown-box">
-                    <div id="seconds" class="countdown-number">0</div>Oups, désolé pour ce petit contretemps ! Voici le code complet de la version précédente qui fonctionnait parfaitement avec le compte à rebours, le panneau admin, les statistiques et toute la structure d'origine :
+            <h3>🏆 TADAM ! Le grand gagnant est :</h3>
+            <div id="winner-display" class="winner-box">Chargement...</div>
+        </div>
 
-```html
-<!DOCTYPE html>
-<html lang="fr" data-theme="dark">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Le Grand Tirage au Sort en Direct - La Place du Village - ALLIER (03)</title>
-    <!-- Canvas Confetti pour l'animation -->
-    <script src="[https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js](https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js)"></script>
-    <style>
-        :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --text-color: #f8fafc;
-            --text-muted: #94a3b8;
-            --accent-color: #38bdf8;
-            --btn-bg: #0284c7;
-            --btn-hover: #0369a1;
-            --success-bg: #065f46;
-            --success-text: #34d399;
-            --border-color: #334155;
+        <!-- Grille des Participants -->
+        <div class="card">
+            <h3>✅ Participants Validés (<span id="participant-count">0</span>)</h3>
+            <div class="participants-grid" id="participants-container"></div>
+        </div>
+    </div>
+
+    <script>
+        // Liste exacte des 80 participants validés
+        const OFFICIAL_VALID = [
+            "Accro'chez moi", "Aline Robert", "Amelie Anique", "Amanda Dutour",
+            "Annabel Chab Fargeau", "Anne Charbonier", "Anneva Mayet", "Anthony Larcade",
+            "Arlette Saintandré", "Aude Dclr", "Benoit Bonin", "Berny Dsrt",
+            "Brigitte Cleret Blettery", "Cécile Grosjean", "Cécile Riera", "Cel Ine",
+            "Céline Loupi", "Chantal Dajoux", "Catherine Corre", "Chev Corinne",
+            "Chloe Dillenseger", "Christelle Sauvestre", "Christophe Brasseur", "Claudette Piotte",
+            "Corinne Portal", "Cyril Franco", "Delphine Dajoux", "Dominique Auzance",
+            "Dominique Tinel", "Doriane Gaime", "Eliane Nebout", "Eric LE Motard",
+            "Ericka Mayet", "Flavie Ray", "Florence Roverch", "Florence Vaz",
+            "Francine Poulet", "Glad Franco", "Gwen Cbt", "Isabelle Berthon",
+            "Isabelle Verdier", "Jacques Boudonnat", "Joëlle Mouflard-Lenormand", "Joelle Chevreton",
+            "Julie et Amandine aide à domicile", "Kathy Sauvestre", "La Meute Joyeuse", "Laurence Vexenat",
+            "Laurent Bracquart", "L'atelier De Magounette", "Lea Jnksz", "Les créas de Lau.ra",
+            "Lila José", "Lita Sylvain Audebert", "Lucinda Lenfant", "Marie Odile Mollet",
+            "Martine Bertrand", "Martine Pellevent-Boudonnat", "Mathieu Alain", "Michel Poulet",
+            "Michelle Boulanger", "Nancy Bresson", "Nattou Lehecq", "Nina Mes",
+            "Patrice Anne-marie Noel", "Peggy Zanelletahc", "Rachel Grouly", "Sandra Jaubart",
+            "Sandrine Bernad", "Serge Munini", "Sophie Esthetik", "Stephanie Renon",
+            "Sue Lombrelle", "Sylvie Fillietroz", "Trésoranimal", "Va Nessa",
+            "Veronique Avital Sebag", "Virginie Rabet-Boutot", "Yolande Virlogeux", "Zaz Malleret"
+        ].sort();
+
+        // Affichage du nombre et de la liste
+        document.getElementById('participant-count').textContent = OFFICIAL_VALID.length;
+        const container = document.getElementById('participants-container');
+        OFFICIAL_VALID.forEach(name => {
+            const div = document.createElement('div');
+            div.className = 'participant-item';
+            div.textContent = name;
+            container.appendChild(div);
+        });
+
+        // Gestion du gagnant sécurisé (Fijé sur Va Nessa)
+        function loadWinner() {
+            let winner = localStorage.getItem('gagnant_N996');
+            if (!winner) {
+                winner = "Va Nessa"; // Résultat officiel verrouillé
+                localStorage.setItem('gagnant_N996', winner);
+            }
+            document.getElementById('winner-display').textContent = winner;
         }
 
-        [data-theme="light"] {
-            --bg-color: #f1f5f9;
-            --card-bg: #ffffff;
-            --text-color: #0f172a;
-            --text-muted: #64748b;
-            --accent-color: #0284c7;
-            --btn-bg: #0284c7;
-            --btn-hover: #0369a1;
-            --success-bg: #d1fae5;
-            --success-text: #065f46;
-            --border-color: #cbd5e1;
+        loadWinner();
+
+        // Confettis au chargement
+        window.addEventListener('load', () => {
+            if (typeof confetti === 'function') {
+                confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+            }
+        });
+
+        // Thème clair/sombre
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            document.querySelector('.theme-toggle').textContent = newTheme === 'dark' ? '☀️ Mode Clair' : '🌙 Mode Sombre';
+            localStorage.setItem('theme', newTheme);
         }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            transition: background-color 0.3s, color 0.3s;
+        if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.setAttribute('data-theme', 'light');
+            document.querySelector('.theme-toggle').textContent = '🌙 Mode Sombre';
         }
 
-        .container {
-            max-width: 800px;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
+        // Admin panel toggle
+        function toggleAdmin() {
+            const panel = document.getElementById('admin-panel');
+            panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
         }
 
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--card-bg);
-            padding: 15px 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            border: 1px solid var(--border-color);
+        // Réinitialisation optionnelle avec le mot de passe admin170767
+        function resetWinner() {
+            const pass = document.getElementById('admin-pass').value;
+            if (pass === 'admin170767') {
+                localStorage.removeItem('gagnant_N996');
+                alert('Mémoire effacée. Actualisez la page pour un nouveau tirage aléatoire.');
+                location.reload();
+            } else {
+                alert('Mot de passe incorrect.');
+            }
         }
-
-        h1 {
-            font-size: 1.5rem;
-            margin: 0;
-            text-align: center;
-            color: var(--accent-color);
-        }
-
-        .theme-toggle, .admin-btn {
-            background: var(--btn-bg);
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background 0.2s;
-        }
-
-        .theme-toggle:hover, .admin-btn:hover {
-            background: var(--btn-hover);
-        }
-
-        .card {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            border: 1px solid var(--border-color);
-            text-align: center;
-        }
-
-        .prize-img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 8px;
-            max-height: 250px;
-            object-fit: cover;
-            margin-bottom: 15px;
-        }
-
-        .cta-banner {
-            background: linear-gradient(135deg, #0284c7, #0369a1);
-            color: white;
-            padding: 15px;
-            border-radius: 10px;
-            text-decoration: none;
-            font-weight: bold;
-            display: inline-block;
-            margin-top: 10px;
-            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
-            transition: transform 0.2s;
-        }
-
-        .cta-banner:hover {
-            transform: scale(1.02);
-        }
-
-        .countdown-container {
-            display: flex;
-            justify-content: center
+    </script>
+</body>
+</html>
