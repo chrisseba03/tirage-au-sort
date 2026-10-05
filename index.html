@@ -97,21 +97,35 @@
             text-align: center;
         }
 
+        .cta-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            margin-top: 15px;
+        }
+
         .cta-banner {
             background: linear-gradient(135deg, #0284c7, #0369a1);
             color: white;
-            padding: 15px;
+            padding: 12px 20px;
             border-radius: 10px;
             text-decoration: none;
             font-weight: bold;
             display: inline-block;
-            margin-top: 10px;
             box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
             transition: transform 0.2s;
+            width: 80%;
+            max-width: 400px;
         }
 
         .cta-banner:hover {
             transform: scale(1.02);
+        }
+
+        .cta-shop {
+            background: linear-gradient(135deg, #059669, #047857);
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
         }
 
         .winner-box {
@@ -178,9 +192,14 @@
             <h3 id="display-title">🎁 Boîte collector numérotée N°996</h3>
             <p id="display-desc">Tentez de remporter le coffret 996 "Route Bleue 2026".<br>Chaque boîte porte son kilomètre de la N7 : 0 = Paris, 996 = Menton.<br><strong>996 numéros, pas un de plus !</strong></p>
             
-            <a id="display-link" href="https://www.facebook.com/groups/laplaceduvillageallier03" target="_blank" class="cta-banner">
-                👉 Accéder à la publication pour participer
-            </a>
+            <div class="cta-container">
+                <a id="display-link" href="#" target="_blank" class="cta-banner">
+                    👉 Accéder à la publication pour participer
+                </a>
+                <a id="display-shop" href="#" target="_blank" class="cta-banner cta-shop">
+                    🛍️ Visiter la boutique du vendeur
+                </a>
+            </div>
 
             <!-- Chronomètre dynamique du temps écoulé -->
             <div id="timer-display" class="timer-box">Calcul du chronomètre...</div>
@@ -206,7 +225,10 @@
         const TIRAGE_CONFIG = {
             title: "🎁 Boîte collector numérotée N°996",
             desc: 'Tentez de remporter le coffret 996 "Route Bleue 2026".<br>Chaque boîte porte son kilomètre de la N7 : 0 = Paris, 996 = Menton.<br><strong>996 numéros, pas un de plus !</strong>',
-            publicationLink: "https://www.facebook.com/groups/laplaceduvillageallier03",
+            
+            // Liens utiles
+            publicationLink: "https://www.facebook.com/groups/bouce/permalink/2566991197077728",
+            shopLink: "https://lesdouceursdelapalisse.fr/",
             
             // Date et heure exacte de fin du tirage (Format : AAAA-MM-JJTHH:MM:SS)
             targetDate: "2026-10-04T20:00:00",
@@ -240,11 +262,12 @@
         };
         // =========================================================================
 
-        // Injection des données dans la page sans utiliser le stockage du navigateur
+        // Injection des données dans la page
         function initPage() {
             document.getElementById('display-title').innerHTML = TIRAGE_CONFIG.title;
             document.getElementById('display-desc').innerHTML = TIRAGE_CONFIG.desc;
             document.getElementById('display-link').href = TIRAGE_CONFIG.publicationLink;
+            document.getElementById('display-shop').href = TIRAGE_CONFIG.shopLink;
             document.getElementById('winner-display').textContent = TIRAGE_CONFIG.winner;
 
             const sortedParticipants = [...TIRAGE_CONFIG.participants].sort((a, b) => a.localeCompare(b));
@@ -279,16 +302,19 @@
             } else {
                 const days = Math.floor(distance / (1000 * 60 * 60 * 24));
                 const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                const minutes = Math.floor((distance % (1000 * 60)) / (1000 * 60)); // correction mineure affichage minutes
+                // ... calcul standard des minutes / secondes écoulées ...
+                const totalMinutes = Math.floor(distance / (1000 * 60));
+                const h = Math.floor(totalMinutes / 60);
+                const m = totalMinutes % 60;
+                const d = Math.floor(h / 24);
+                const remH = h % 24;
 
                 let timeStr = "";
-                if (days > 0) {
-                    timeStr += `${days}j `;
-                }
-                timeStr += `${hours}H ${minutes}M ${seconds}sec`;
+                if (d > 0) timeStr += `${d}j `;
+                timeStr += `${remH}H ${m}M`;
 
-                timerEl.innerHTML = `🏁 Tirage terminé depuis : ${timeStr} depuis la date du tirage.`;
+                timerEl.innerHTML = `🏁 Tirage terminé depuis : ${timeStr}.`;
             }
         }
 
@@ -302,7 +328,7 @@
             }
         });
 
-        // Gestion du thème clair / sombre (instantané, sans stockage persistant)
+        // Gestion du thème clair / sombre
         function toggleTheme() {
             const html = document.documentElement;
             const currentTheme = html.getAttribute('data-theme');
