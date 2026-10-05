@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Le Grand Tirage au Sort en Direct - La Place du Village - ALLIER (03)</title>
+    <!-- Favicon (Le petit dé dans l'onglet) -->
+    <link rel="icon" href="https://api.iconify.design/twemoji:game-die.svg">
     <!-- Canvas Confetti pour l'animation -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
@@ -65,13 +67,13 @@
         }
 
         h1 {
-            font-size: 1.3rem;
+            font-size: 1.1rem;
             margin: 0;
             text-align: center;
             color: var(--accent-color);
         }
 
-        .theme-toggle, .admin-btn {
+        .theme-toggle {
             background: var(--btn-bg);
             color: white;
             border: none;
@@ -82,7 +84,7 @@
             transition: background 0.2s;
         }
 
-        .theme-toggle:hover, .admin-btn:hover {
+        .theme-toggle:hover {
             background: var(--btn-hover);
         }
 
@@ -124,6 +126,17 @@
             box-shadow: 0 4px 15px rgba(6, 95, 70, 0.3);
         }
 
+        .timer-box {
+            font-size: 1.05rem;
+            font-weight: bold;
+            color: var(--accent-color);
+            margin-top: 15px;
+            padding: 12px;
+            background: var(--bg-color);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
         .participants-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -147,25 +160,6 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-
-        #admin-panel {
-            display: none;
-            background: var(--card-bg);
-            border: 2px solid var(--accent-color);
-            padding: 20px;
-            border-radius: 12px;
-            margin-top: 15px;
-            text-align: left;
-        }
-
-        #admin-panel input {
-            padding: 8px;
-            border-radius: 6px;
-            border: 1px solid var(--border-color);
-            background: var(--bg-color);
-            color: var(--text-color);
-            margin-right: 10px;
-        }
     </style>
 </head>
 <body>
@@ -175,29 +169,24 @@
         <header>
             <button class="theme-toggle" onclick="toggleTheme()">☀️ Mode Clair</button>
             <h1>🎉 Le Grand Tirage au Sort en Direct !</h1>
-            <button class="admin-btn" onclick="toggleAdmin()">⚙️ Admin</button>
+            <div style="width: 85px;"></div>
         </header>
-
-        <!-- Panneau Administrateur -->
-        <div id="admin-panel">
-            <h3>Panel Administrateur</h3>
-            <p>Zone de sécurité du tirage.</p>
-            <input type="password" id="admin-pass" placeholder="Mot de passe admin">
-            <button class="admin-btn" onclick="resetWinner()">Réinitialiser</button>
-        </div>
 
         <!-- Carte Principale du Lot -->
         <div class="card">
             <h2>🌲 La Place du Village - ALLIER (03) 🌲</h2>
-            <h3>🎁 Boîte collector numérotée N°996</h3>
-            <p>Tentez de remporter le coffret 996 "Route Bleue 2026".<br>Chaque boîte porte son kilomètre de la N7 : 0 = Paris, 996 = Menton.<br><strong>996 numéros, pas un de plus !</strong></p>
+            <h3 id="display-title">🎁 Boîte collector numérotée N°996</h3>
+            <p id="display-desc">Tentez de remporter le coffret 996 "Route Bleue 2026".<br>Chaque boîte porte son kilomètre de la N7 : 0 = Paris, 996 = Menton.<br><strong>996 numéros, pas un de plus !</strong></p>
             
-            <a href="https://www.facebook.com/groups/laplaceduvillageallier03" target="_blank" class="cta-banner">
+            <a id="display-link" href="https://www.facebook.com/groups/laplaceduvillageallier03" target="_blank" class="cta-banner">
                 👉 Accéder à la publication pour participer
             </a>
+
+            <!-- Chronomètre dynamique du temps écoulé -->
+            <div id="timer-display" class="timer-box">Calcul du chronomètre...</div>
         </div>
 
-        <!-- Bloc du Gagnant Officiel Figé -->
+        <!-- Bloc du Gagnant Officiel -->
         <div class="card">
             <h3>🏆 TADAM ! Le grand gagnant est :</h3>
             <div id="winner-display" class="winner-box">Va Nessa</div>
@@ -211,82 +200,115 @@
     </div>
 
     <script>
-        // Liste exacte des 80 participants validés
-        const OFFICIAL_VALID = [
-            "Accro'chez moi", "Aline Robert", "Amelie Anique", "Amanda Dutour",
-            "Annabel Chab Fargeau", "Anne Charbonier", "Anneva Mayet", "Anthony Larcade",
-            "Arlette Saintandré", "Aude Dclr", "Benoit Bonin", "Berny Dsrt",
-            "Brigitte Cleret Blettery", "Cécile Grosjean", "Cécile Riera", "Cel Ine",
-            "Céline Loupi", "Chantal Dajoux", "Catherine Corre", "Chev Corinne",
-            "Chloe Dillenseger", "Christelle Sauvestre", "Christophe Brasseur", "Claudette Piotte",
-            "Corinne Portal", "Cyril Franco", "Delphine Dajoux", "Dominique Auzance",
-            "Dominique Tinel", "Doriane Gaime", "Eliane Nebout", "Eric LE Motard",
-            "Ericka Mayet", "Flavie Ray", "Florence Roverch", "Florence Vaz",
-            "Francine Poulet", "Glad Franco", "Gwen Cbt", "Isabelle Berthon",
-            "Isabelle Verdier", "Jacques Boudonnat", "Joëlle Mouflard-Lenormand", "Joelle Chevreton",
-            "Julie et Amandine aide à domicile", "Kathy Sauvestre", "La Meute Joyeuse", "Laurence Vexenat",
-            "Laurent Bracquart", "L'atelier De Magounette", "Lea Jnksz", "Les créas de Lau.ra",
-            "Lila José", "Lita Sylvain Audebert", "Lucinda Lenfant", "Marie Odile Mollet",
-            "Martine Bertrand", "Martine Pellevent-Boudonnat", "Mathieu Alain", "Michel Poulet",
-            "Michelle Boulanger", "Nancy Bresson", "Nattou Lehecq", "Nina Mes",
-            "Patrice Anne-marie Noel", "Peggy Zanelletahc", "Rachel Grouly", "Sandra Jaubart",
-            "Sandrine Bernad", "Serge Munini", "Sophie Esthetik", "Stephanie Renon",
-            "Sue Lombrelle", "Sylvie Fillietroz", "Trésoranimal", "Va Nessa",
-            "Veronique Avital Sebag", "Virginie Rabet-Boutot", "Yolande Virlogeux", "Zaz Malleret"
-        ].sort();
+        // =========================================================================
+        // ⚙️ ZONE DE CONFIGURATION UNIQUE (TOUT SE PASSE ICI DANS LE CODE HTML)
+        // =========================================================================
+        const TIRAGE_CONFIG = {
+            title: "🎁 Boîte collector numérotée N°996",
+            desc: 'Tentez de remporter le coffret 996 "Route Bleue 2026".<br>Chaque boîte porte son kilomètre de la N7 : 0 = Paris, 996 = Menton.<br><strong>996 numéros, pas un de plus !</strong>',
+            publicationLink: "https://www.facebook.com/groups/laplaceduvillageallier03",
+            
+            // Date et heure exacte de fin du tirage (Format : AAAA-MM-JJTHH:MM:SS)
+            targetDate: "2026-10-04T20:00:00",
+            
+            // Gagnant(e) officiel(le) figé(e) dans le code source
+            winner: "Va Nessa",
+            
+            // Liste des participants (triée automatiquement par ordre alphabétique)
+            participants: [
+                "Accro'chez moi", "Aline Robert", "Amelie Anique", "Amanda Dutour",
+                "Annabel Chab Fargeau", "Anne Charbonier", "Anneva Mayet", "Anthony Larcade",
+                "Arlette Saintandré", "Aude Dclr", "Benoit Bonin", "Berny Dsrt",
+                "Brigitte Cleret Blettery", "Cécile Grosjean", "Cécile Riera", "Cel Ine",
+                "Céline Loupi", "Chantal Dajoux", "Catherine Corre", "Chev Corinne",
+                "Chloe Dillenseger", "Christelle Sauvestre", "Christophe Brasseur", "Claudette Piotte",
+                "Corinne Portal", "Cyril Franco", "Delphine Dajoux", "Dominique Auzance",
+                "Dominique Tinel", "Doriane Gaime", "Eliane Nebout", "Eric LE Motard",
+                "Ericka Mayet", "Flavie Ray", "Florence Roverch", "Florence Vaz",
+                "Francine Poulet", "Glad Franco", "Gwen Cbt", "Isabelle Berthon",
+                "Isabelle Verdier", "Jacques Boudonnat", "Joëlle Mouflard-Lenormand", "Joelle Chevreton",
+                "Julie et Amandine aide à domicile", "Kathy Sauvestre", "La Meute Joyeuse", "Laurence Vexenat",
+                "Laurent Bracquart", "L'atelier De Magounette", "Lea Jnksz", "Les créas de Lau.ra",
+                "Lila José", "Lita Sylvain Audebert", "Lucinda Lenfant", "Marie Odile Mollet",
+                "Martine Bertrand", "Martine Pellevent-Boudonnat", "Mathieu Alain", "Michel Poulet",
+                "Michelle Boulanger", "Nancy Bresson", "Nattou Lehecq", "Nina Mes",
+                "Patrice Anne-marie Noel", "Peggy Zanelletahc", "Rachel Grouly", "Sandra Jaubart",
+                "Sandrine Bernad", "Serge Munini", "Sophie Esthetik", "Stephanie Renon",
+                "Sue Lombrelle", "Sylvie Fillietroz", "Trésoranimal", "Va Nessa",
+                "Veronique Avital Sebag", "Virginie Rabet-Boutot", "Yolande Virlogeux", "Zaz Malleret"
+            ]
+        };
+        // =========================================================================
 
-        // Affichage du nombre et de la liste des participants
-        document.getElementById('participant-count').textContent = OFFICIAL_VALID.length;
-        const container = document.getElementById('participants-container');
-        OFFICIAL_VALID.forEach(name => {
-            const div = document.createElement('div');
-            div.className = 'participant-item';
-            div.textContent = name;
-            container.appendChild(div);
-        });
+        // Injection des données dans la page sans utiliser le stockage du navigateur
+        function initPage() {
+            document.getElementById('display-title').innerHTML = TIRAGE_CONFIG.title;
+            document.getElementById('display-desc').innerHTML = TIRAGE_CONFIG.desc;
+            document.getElementById('display-link').href = TIRAGE_CONFIG.publicationLink;
+            document.getElementById('winner-display').textContent = TIRAGE_CONFIG.winner;
 
-        // Verrouillage absolu et permanent sur Va Nessa
-        const officialWinner = "Va Nessa";
-        document.getElementById('winner-display').textContent = officialWinner;
-        localStorage.setItem('gagnant_N996', officialWinner);
+            const sortedParticipants = [...TIRAGE_CONFIG.participants].sort((a, b) => a.localeCompare(b));
+            document.getElementById('participant-count').textContent = sortedParticipants.length;
+            
+            const container = document.getElementById('participants-container');
+            container.innerHTML = '';
+            sortedParticipants.forEach(name => {
+                const div = document.createElement('div');
+                div.className = 'participant-item';
+                div.textContent = name.trim();
+                container.appendChild(div);
+            });
+        }
 
-        // Confettis de célébration au chargement
+        initPage();
+
+        // Chronomètre précis du temps écoulé depuis le tirage
+        function updateTimer() {
+            const targetTime = new Date(TIRAGE_CONFIG.targetDate).getTime();
+            const now = new Date().getTime();
+            const distance = now - targetTime;
+            const timerEl = document.getElementById('timer-display');
+
+            if (distance < 0) {
+                const timeLeft = Math.abs(distance);
+                const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                timerEl.innerHTML = `⏳ Ouverture du tirage dans : ${days}j ${hours}h ${minutes}m ${seconds}s`;
+            } else {
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                let timeStr = "";
+                if (days > 0) {
+                    timeStr += `${days}j `;
+                }
+                timeStr += `${hours}H ${minutes}M ${seconds}sec`;
+
+                timerEl.innerHTML = `🏁 Tirage terminé depuis : ${timeStr} depuis la date du tirage.`;
+            }
+        }
+
+        setInterval(updateTimer, 1000);
+        updateTimer();
+
+        // Confettis de fête au chargement
         window.addEventListener('load', () => {
             if (typeof confetti === 'function') {
                 confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
             }
         });
 
-        // Gestion du thème clair/sombre
+        // Gestion du thème clair / sombre (instantané, sans stockage persistant)
         function toggleTheme() {
             const html = document.documentElement;
             const currentTheme = html.getAttribute('data-theme');
             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
             html.setAttribute('data-theme', newTheme);
             document.querySelector('.theme-toggle').textContent = newTheme === 'dark' ? '☀️ Mode Clair' : '🌙 Mode Sombre';
-            localStorage.setItem('theme', newTheme);
-        }
-
-        if (localStorage.getItem('theme') === 'light') {
-            document.documentElement.setAttribute('data-theme', 'light');
-            document.querySelector('.theme-toggle').textContent = '🌙 Mode Sombre';
-        }
-
-        // Panneau Admin
-        function toggleAdmin() {
-            const panel = document.getElementById('admin-panel');
-            panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
-        }
-
-        function resetWinner() {
-            const pass = document.getElementById('admin-pass').value;
-            if (pass === 'admin170767') {
-                localStorage.removeItem('gagnant_N996');
-                alert('Cache nettoyé.');
-                location.reload();
-            } else {
-                alert('Mot de passe incorrect.');
-            }
         }
     </script>
 </body>
